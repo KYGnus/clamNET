@@ -2,7 +2,7 @@
 
 A cross-platform web-based frontend for scanning files and directories using **ClamAV**. Supports both **local** and **remote (via SSH)** scanning on Windows and Linux machines. Built with Python and Flask.
 
-![ClamAV Web Scanner Screenshot](https://your-screenshot-link-if-available.com)
+![ClamAV Web Scanner Screenshot](./clamnet.png)
 
 ---
 
@@ -32,9 +32,9 @@ A cross-platform web-based frontend for scanning files and directories using **C
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/clamav-web-scanner.git
-   cd clamav-web-scanner
-```
+   git clone https://github.com/KYGnus/clamNET.git
+   cd clamNET
+   ```
 
 2. **Install dependencies**
 
@@ -78,7 +78,7 @@ A cross-platform web-based frontend for scanning files and directories using **C
 ## 📁 Project Structure
 
 ```
-clamav-web-scanner/
+clamNET
 ├── main.py                # Main Flask app
 ├── templates/
 │   └── index.html         # Frontend page
