@@ -34,7 +34,7 @@ A cross-platform web-based frontend for scanning files and directories using **C
    ```bash
    git clone https://github.com/yourusername/clamav-web-scanner.git
    cd clamav-web-scanner
-````
+```
 
 2. **Install dependencies**
 
