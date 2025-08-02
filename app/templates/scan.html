@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>File Scanner - clamNET</title>
+
+  <!-- Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="../static/css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
+      color: #f1f1f1;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h5 {
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar, .sb-sidenav, .card {
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-header {
+      font-weight: 500;
+      font-size: 1rem;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .card-body code {
+      color: #66d9ef;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+    }
+
+    .card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: transparent;
+    }
+
+    .sb-sidenav-footer {
+      font-size: 0.85rem;
+    }
+
+    .text-glow {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    .icon-glow {
+      filter: drop-shadow(0 0 4px #00fff7a4);
+    }
+
+    .breadcrumb {
+      background: transparent;
+    }
+
+    #scanResults {
+      font-family: monospace;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #00ff7f;
+    }
+
+    a {
+      color: #88f1ff;
+    }
+
+    a:hover {
+      color: #b9f9ff;
+      text-decoration: underline;
+    }
+    
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+  <!-- Top Nav -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+    <a class="navbar-brand text-glow" href="/">clamNET</a>
+    <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
+  </nav>
+
+  <!-- Layout -->
+  <div id="layoutSidenav">
+    <!-- Sidebar -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu px-2">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+              Dashboard
+            </a>
+            <div class="sb-sidenav-menu-heading">Tools</div>
+            <a class="nav-link active" href="/scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
+              File Scanner
+            </a>
+            <a class="nav-link" href="/install">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Install ClamAV
+            </a>
+            <a class="nav-link" href="/network-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              Network Scanner
+            </a>
+          </div>
+        </div>
+        <div class="sb-sidenav-footer text-light">
+          <div class="small">System Status:</div>
+          <span class="text-success">●</span> Operational
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div id="layoutSidenav_content">
+      <main class="p-4">
+        <h1 class="mb-3 text-glow">File Scanner</h1>
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item active">Scan files for viruses</li>
+        </ol>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-search me-1 icon-glow"></i> File Scanner
+          </div>
+          <div class="card-body">
+            <ul class="nav nav-tabs mb-3" id="scanTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="local-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#local-scan"
+                  type="button"
+                  role="tab"
+                  aria-controls="local-scan"
+                  aria-selected="true"
+                  style="color:black;"
+                  
+                >
+                  Local Scan
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="remote-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#remote-scan"
+                  type="button"
+                  role="tab"
+                  aria-controls="remote-scan"
+                  aria-selected="false"
+                  style="color:white;"
+                 >
+                  Remote Scan
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content" id="scanTabContent">
+              <!-- Local Scan Tab -->
+              <div
+                class="tab-pane fade show active"
+                id="local-scan"
+                role="tabpanel"
+                aria-labelledby="local-tab"
+              >
+                <form id="localScanForm" method="post" enctype="multipart/form-data" action="/scan" >
+                  <div class="mb-3">
+                    <label for="scanPath" class="form-label" style="color:rgb(138, 15, 15);">Path to Scan</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="scanPath"
+                      name="scan_path"
+                      placeholder="e.g. /home/user or C:\\Windows"
+                      required
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Start Scan</button>
+                </form>
+              </div>
+
+              <!-- Remote Scan Tab -->
+              <div
+                class="tab-pane fade"
+                id="remote-scan"
+                role="tabpanel"
+                aria-labelledby="remote-tab"
+                
+              >
+                <form id="remoteScanForm" style="color:white;">
+                  <div class="mb-3" >
+                    <label for="remoteHost" class="form-label">Remote Host IP</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="remoteHost"
+                      name="remote_host"
+                      placeholder="e.g. 192.168.1.100"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="remoteUser" class="form-label">Username</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="remoteUser"
+                      name="remote_user"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="remotePass" class="form-label">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="remotePass"
+                      name="remote_pass"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="remotePath" class="form-label">Path to Scan</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="remotePath"
+                      name="scan_path"
+                      placeholder="e.g. /home/user or C:\\Windows"
+                      required
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-info">Start Remote Scan</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Scan Results -->
+            <div class="mt-4">
+              <h5 style="color:rgb(138, 15, 15);">Scan Results</h5>
+              <div
+                id="scanResults"
+                class="p-3 rounded"
+                style="height: 300px; overflow-y: auto;"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="py-4 mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex justify-content-between align-items-center small">
+            <div class="text-muted">© clamNET 2025</div>
+            <div>
+              <a href="#">Privacy</a>
+              &middot;
+              <a href="#">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
+  <script src="../static/js/scripts.js"></script>
+
+<script>
+    // Handle local scan form submission
+    document.getElementById('localScanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const scanPath = document.getElementById('scanPath').value;
+        const resultsDiv = document.getElementById('scanResults');
+        resultsDiv.innerHTML = '';
+
+        const eventSource = new EventSource(`/perform-scan?scan_path=${encodeURIComponent(scanPath)}`);
+
+        eventSource.onmessage = function(event) {
+            const message = event.data.replace('data: ', '');
+            resultsDiv.innerHTML += message + '<br>';
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        };
+
+        eventSource.onerror = function() {
+            eventSource.close();
+        };
+    });
+
+    // Handle remote scan form submission
+    document.getElementById('remoteScanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const remoteHost = document.getElementById('remoteHost').value;
+        const username = document.getElementById('remoteUser').value;
+        const password = document.getElementById('remotePass').value;
+        const scanPath = document.getElementById('remotePath').value;
+        const resultsDiv = document.getElementById('scanResults');
+        resultsDiv.innerHTML = '';
+
+        const url = new URL('/perform-scan', window.location.origin);
+        url.searchParams.append("remote_host", remoteHost);
+        url.searchParams.append("remote_user", username);
+        url.searchParams.append("remote_pass", password);
+        url.searchParams.append("scan_path", scanPath);
+
+        const eventSource = new EventSource(url.toString());
+
+        eventSource.onmessage = function(event) {
+            const message = event.data.replace('data: ', '');
+            resultsDiv.innerHTML += message + '<br>';
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        };
+
+        eventSource.onerror = function() {
+            eventSource.close();
+        };
+    });
+</script>
+</body>
+</html>

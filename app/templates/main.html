@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - clamNET</title>
+
+  <!-- Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="../static/css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+  <!-- Custom Vision Pro Aesthetic -->
+  <style>
+    body {
+      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
+      color: #f1f1f1;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h5 {
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar, .sb-sidenav, .card {
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-header {
+      font-weight: 500;
+      font-size: 1rem;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .card-body code {
+      color: #66d9ef;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+    }
+
+    .card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: transparent;
+    }
+
+    .sb-sidenav-footer {
+      font-size: 0.85rem;
+    }
+
+    .text-glow {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    .icon-glow {
+      filter: drop-shadow(0 0 4px #00fff7a4);
+    }
+
+    .breadcrumb {
+      background: transparent;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    a {
+      color: #88f1ff;
+    }
+
+    a:hover {
+      color: #b9f9ff;
+      text-decoration: underline;
+    }
+
+    canvas {
+  background: transparent;
+  border-radius: 50%;
+}
+
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+
+  <!-- Top Nav -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+    <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
+    <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
+  </nav>
+
+  <!-- Layout -->
+  <div id="layoutSidenav">
+    <!-- Sidebar -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu px-2">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link active" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+              Dashboard
+            </a>
+            <div class="sb-sidenav-menu-heading">Tools</div>
+            <a class="nav-link" href="/scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
+              File Scanner
+            </a>
+            <a class="nav-link" href="/install">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Install ClamAV
+            </a>
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Freshclam
+            </a>
+            <a class="nav-link" href="/scan_map">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              Network Map
+            </a>
+          </div>
+        </div>
+        <div class="sb-sidenav-footer text-light">
+          <div class="small">System Status:</div>
+          <span class="text-success">●</span> Operational
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div id="layoutSidenav_content">
+      <main class="p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="mb-3 text-glow">clamNET</h1>
+          <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
+        </div>
+
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item active">System Summary</li>
+        </ol>
+
+        <!-- Info Cards -->
+        <div class="row">
+          <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card text-white">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h5>Local IP Address</h5>
+                  <h2 class="text-glow">{{ ip }}</h2>
+                </div>
+                <i class="fas fa-network-wired fs-1 icon-glow"></i>
+              </div>
+              <div class="card-footer d-flex justify-content-between">
+                <span>Network Interface</span><i class="fas fa-angle-right"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card text-white">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h5>Operating System</h5>
+                  <h2 class="text-glow">{{ os }}</h2>
+                </div>
+                <i class="fas fa-laptop fs-1 icon-glow"></i>
+              </div>
+              <div class="card-footer d-flex justify-content-between">
+                <span>Platform</span><i class="fas fa-angle-right"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card text-white">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h5>System Time</h5>
+                  <h2 class="text-glow">{{ time }}</h2>
+                </div>
+                <i class="fas fa-clock fs-1 icon-glow"></i>
+              </div>
+              <div class="card-footer d-flex justify-content-between">
+                <span>Last Updated</span><i class="fas fa-angle-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ClamAV Paths -->
+        <div class="row mt-4">
+          <div class="col-xl-6 mb-4">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fas fa-terminal me-2 icon-glow"></i> ClamAV Path on Linux
+              </div>
+              <div class="card-body">
+                <p><strong>Executable:</strong> <code>{{ clamav_path_linux }}</code></p>
+                <p><strong>Database Path:</strong> <code>{{ clamav_db_path_linux }}</code></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-6 mb-4">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fab fa-windows me-2 icon-glow"></i> ClamAV Path on Windows
+              </div>
+              <div class="card-body">
+                <p><strong>Executable:</strong> <code>{{ clamav_path_windows }}</code></p>
+                <p><strong>Database Path:</strong> <code>{{ clamav_db_path_windows }}</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                  <div class="row mb-5">
+            <div class="col-md-6">
+              <div class="card text-white">
+                <div class="card-header">
+                  <i class="fas fa-microchip icon-glow me-2"></i> CPU Usage
+                </div>
+                <div class="card-body text-center">
+                  <canvas id="cpuCanvas" width="200" height="200"></canvas>
+                  <h5 class="mt-3">CPU: <span id="cpuPercent">{{ cpu }}%</span></h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card text-white">
+                <div class="card-header">
+                  <i class="fas fa-memory icon-glow me-2"></i> RAM Usage
+                </div>
+                <div class="card-body text-center">
+                  <canvas id="ramCanvas" width="200" height="200"></canvas>
+                  <h5 class="mt-3">RAM: <span id="ramPercent">{{ ram }}%</span></h5>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+          <div class="col-xl-12 col-md-12 mb-4">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fas fa-network-wired icon-glow me-2"></i> Network Packet Status
+              </div>
+              <div class="card-body">
+                <p><strong>Packets Sent:</strong> <span class="text-glow">{{ net_packets_sent }}</span></p>
+                <p><strong>Packets Received:</strong> <span class="text-glow">{{ net_packets_recv }}</span></p>
+                <p><strong>Bytes Sent:</strong> <span class="text-glow">{{ net_bytes_sent | humanize_bytes }}</span></p>
+                <p><strong>Bytes Received:</strong> <span class="text-glow">{{ net_bytes_recv | humanize_bytes }}</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+
+
+      <!-- Footer -->
+      <footer class="py-4 mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex justify-content-between align-items-center small">
+            <div class="text-muted">© clamNET 2025</div>
+            <div>
+              <a href="#">Privacy</a>
+              &middot;
+              <a href="#">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
+  <script src="../static/js/scripts.js"></script>
+<script>
+function drawUsage(canvasId, percent, color) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const radius = canvas.width / 2 - 10;
+  const center = canvas.width / 2;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.beginPath();
+  ctx.arc(center, center, radius, 0, 2 * Math.PI);
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 15;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(center, center, radius, -Math.PI / 2, (2 * Math.PI * percent / 100) - Math.PI / 2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 15;
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = color;
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+}
+
+window.onload = function() {
+  const cpu = parseFloat("{{ cpu }}");
+  const ram = parseFloat("{{ ram }}");
+
+  document.getElementById('cpuPercent').textContent = cpu + '%';
+  document.getElementById('ramPercent').textContent = ram + '%';
+
+  drawUsage('cpuCanvas', cpu, '#00ffff');
+  drawUsage('ramCanvas', ram, '#ff66cc');
+}
+</script>
+
+
+</body>
+</html>
