@@ -23,10 +23,11 @@ import platform
 import os
 import re
 import psutil
+import config
 
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Change this to a strong secret key
+app.secret_key = config.SECRET_KEY  # Change this to a strong secret key
 
 # Flask-Login setup
 login_manager = LoginManager()
@@ -34,8 +35,8 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Single admin user configuration
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD_HASH = generate_password_hash('admin')  # Change this password
+ADMIN_USERNAME = config.USERNAME
+ADMIN_PASSWORD_HASH = generate_password_hash(f'{config.PASSWORD}')  # Change this password
 
 class User(UserMixin):
     def __init__(self, id):
