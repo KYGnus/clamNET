@@ -29,7 +29,7 @@ A cross-platform, web-based, open-source console for managing and automating **C
 
 ### 📋 Prerequisites
 
-- Python 3.9+
+- Python 3.9+ 
 - `pip` / `virtualenv`
 - SSH access to remote systems
 - ClamAV MSI for Windows installs (`clamav-1.*.*.win.x64.msi`) should be present on the server
