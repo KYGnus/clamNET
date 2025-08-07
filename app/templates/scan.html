@@ -101,12 +101,12 @@
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link" href="/">
+            <a class="nav-link active" href="/">
               <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
               Dashboard
             </a>
             <div class="sb-sidenav-menu-heading">Tools</div>
-            <a class="nav-link active" href="/scan">
+            <a class="nav-link" href="/scan">
               <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
               File Scanner
             </a>
@@ -114,10 +114,23 @@
               <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
               Install ClamAV
             </a>
-            <a class="nav-link" href="/network-scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
-              Network Scanner
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Freshclam
             </a>
+            <a class="nav-link" href="/scan_map">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              Network Map
+            </a>
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              CFG analyzing
+            </a>
+            
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
@@ -136,10 +149,10 @@
         </ol>
 
         <div class="card mb-4">
-          <div class="card-header">
+          <div class="alert alert-dark mb-3">
             <i class="fas fa-search me-1 icon-glow"></i> File Scanner
           </div>
-          <div class="card-body">
+          <div class="card-body ">
             <ul class="nav nav-tabs mb-3" id="scanTab" role="tablist">
               <li class="nav-item" role="presentation">
                 <button

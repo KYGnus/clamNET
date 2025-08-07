@@ -118,7 +118,7 @@
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link" href="/">
+            <a class="nav-link active" href="/">
               <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
               Dashboard
             </a>
@@ -131,14 +131,23 @@
               <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
               Install ClamAV
             </a>
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Freshclam
+            </a>
             <a class="nav-link" href="/scan_map">
               <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
               Network Map
             </a>
-            <a class="nav-link active" href="/update">
-              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt icon-glow"></i></div>
-              Update Databases
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              IOC Scan
             </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              CFG analyzing
+            </a>
+            
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
@@ -164,8 +173,9 @@
         <!-- Update Form -->
         <div class="row">
           <div class="col-12">
+            
             <div class="card text-white mb-4">
-              <div class="card-header">
+              <div class="alert alert-dark mb-3">
                 <i class="fas fa-sync-alt me-2 icon-glow"></i> Update Virus Databases
               </div>
               <div class="card-body">
@@ -203,7 +213,7 @@
         <div class="row">
           <div class="col-12">
             <div class="card text-white">
-              <div class="card-header">
+             <div class="alert alert-dark mb-3">
                 <i class="fas fa-terminal me-2 icon-glow"></i> Update Progress
               </div>
               <div class="card-body">

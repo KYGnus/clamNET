@@ -14,7 +14,7 @@
   <!-- Custom Vision Pro Aesthetic -->
   <style>
     body {
-      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
+      background: radial-gradient(ellipse at center, #000000 0%, #151515 100%);
       color: #f1f1f1;
       font-family: 'Segoe UI', sans-serif;
       overflow-x: hidden;
@@ -127,6 +127,18 @@
               <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
               Network Map
             </a>
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              CFG analyzing
+            </a>
+            <a class="nav-link" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              About us
+            </a>
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
@@ -151,11 +163,11 @@
         <!-- Info Cards -->
         <div class="row">
           <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card text-white">
+             <div class="alert alert-dark mb-3">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5>Local IP Address</h5>
-                  <h2 class="text-glow">{{ ip }}</h2>
+                  <h2 >{{ ip }}</h2>
                 </div>
                 <i class="fas fa-network-wired fs-1 icon-glow"></i>
               </div>
@@ -166,11 +178,11 @@
           </div>
 
           <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card text-white">
+             <div class="alert alert-dark mb-3">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5>Operating System</h5>
-                  <h2 class="text-glow">{{ os }}</h2>
+                  <h2>{{ os }}</h2>
                 </div>
                 <i class="fas fa-laptop fs-1 icon-glow"></i>
               </div>
@@ -181,11 +193,11 @@
           </div>
 
           <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card text-white">
+            <div class="alert alert-dark mb-3">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5>System Time</h5>
-                  <h2 class="text-glow">{{ time }}</h2>
+                  <h2>{{ time }}</h2>
                 </div>
                 <i class="fas fa-clock fs-1 icon-glow"></i>
               </div>
@@ -200,7 +212,7 @@
         <div class="row mt-4">
           <div class="col-xl-6 mb-4">
             <div class="card text-white">
-              <div class="card-header">
+              <div class="alert alert-dark mb-3">
                 <i class="fas fa-terminal me-2 icon-glow"></i> ClamAV Path on Linux
               </div>
               <div class="card-body">
@@ -212,7 +224,7 @@
 
           <div class="col-xl-6 mb-4">
             <div class="card text-white">
-              <div class="card-header">
+               <div class="alert alert-dark mb-3">
                 <i class="fab fa-windows me-2 icon-glow"></i> ClamAV Path on Windows
               </div>
               <div class="card-body">
@@ -223,10 +235,10 @@
           </div>
         </div>
 
-                  <div class="row mb-5">
+        <div class="row mb-5">
             <div class="col-md-6">
               <div class="card text-white">
-                <div class="card-header">
+                 <div class="alert alert-dark mb-3">
                   <i class="fas fa-microchip icon-glow me-2"></i> CPU Usage
                 </div>
                 <div class="card-body text-center">
@@ -237,7 +249,7 @@
             </div>
             <div class="col-md-6">
               <div class="card text-white">
-                <div class="card-header">
+                 <div class="alert alert-dark mb-3">
                   <i class="fas fa-memory icon-glow me-2"></i> RAM Usage
                 </div>
                 <div class="card-body text-center">
@@ -251,7 +263,7 @@
           <div class="row mb-4">
           <div class="col-xl-12 col-md-12 mb-4">
             <div class="card text-white">
-              <div class="card-header">
+              <div class="alert alert-dark mb-3">
                 <i class="fas fa-network-wired icon-glow me-2"></i> Network Packet Status
               </div>
               <div class="card-body">

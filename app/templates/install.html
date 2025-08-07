@@ -100,7 +100,7 @@
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link" href="/">
+            <a class="nav-link active" href="/">
               <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
               Dashboard
             </a>
@@ -109,14 +109,27 @@
               <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
               File Scanner
             </a>
-            <a class="nav-link active" href="/install">
+            <a class="nav-link" href="/install">
               <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
               Install ClamAV
             </a>
-            <a class="nav-link" href="/network-scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
-              Network Scanner
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Freshclam
             </a>
+            <a class="nav-link" href="/scan_map">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              Network Map
+            </a>
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              CFG analyzing
+            </a>
+            
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
@@ -133,27 +146,80 @@
         <ol class="breadcrumb mb-4">
           <li class="breadcrumb-item active">Install ClamAV on remote hosts</li>
         </ol>
+          <div class="col-lg-12 mb-4">
+            <div class="card doc-card h-100">
+              <div class="card-header">
+                <i class="fas fa-info-circle me-1"></i> How This Works
+              </div>
+              <div class="card-body" style="color:white;">
+                <h5 class="mb-3">Remote Installation Process</h5>
+                <p>This tool automates ClamAV installation across multiple hosts using SSH (Linux) or WinRM (Windows).</p>
+                
+                <div class="alert alert-dark mb-3">
+                  <h6><i class="fas fa-cogs me-2"></i>Technical Details</h6>
+                  <ul class="small">
+                    <li>Uses Paramiko for SSH connections</li>
+                    <li>Detects OS automatically</li>
+                    <li>Parallel installation on multiple hosts</li>
+                    <li>Real-time progress streaming</li>
+                  </ul>
+                </div>
 
+                <h5 class="mt-4 mb-3">Supported Systems</h5>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="alert alert-dark mb-2">
+                      <h6><i class="fab fa-linux me-2"></i>Linux</h6>
+                      <ul class="small">
+                        <li>Ubuntu/Debian</li>
+                        <li>CentOS/RHEL</li>
+                        <li>Fedora</li>
+                        <li>OpenSUSE</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="alert alert-dark mb-2">
+                      <h6><i class="fab fa-windows me-2"></i>Windows</h6>
+                      <ul class="small">
+                        <li>Windows 10/11</li>
+                        <li>Windows Server</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <h5 class="mt-4 mb-3">Requirements</h5>
+                <ul class="small">
+                  <li>SSH access (Linux)</li>
+                  <li>Admin privileges (Windows)</li>
+                  <li>Python 3.6+ on target hosts</li>
+                  <li>Network connectivity</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         <!-- Install Form -->
         <div class="card mb-4">
+           <div class="card doc-card h-100"></div>
           <div class="card-header">
             <i class="fas fa-download me-1 icon-glow"></i> Install ClamAV
           </div>
           <div class="card-body">
             <form id="installForm">
-              <div class="mb-3">
-                <label for="installHosts" class="form-label" style="color:white;">Host IPs (comma separated)</label>
+              <div class="alert alert-dark mb-3">
+                <label for="installHosts" class="form-label" style="color:rgb(0, 0, 0);">Host IPs (comma separated)</label>
                 <input type="text" class="form-control" id="installHosts" name="install_hosts" placeholder="e.g. 192.168.1.100,192.168.1.101" required />
               </div>
-              <div class="mb-3">
-                <label for="installUser" class="form-label" style="color:white;">Username</label>
+             <div class="alert alert-dark mb-3">
+                <label for="installUser" class="form-label" style="color:rgb(0, 0, 0);">Username</label>
                 <input type="text" class="form-control" id="installUser" name="install_user" required />
               </div>
-              <div class="mb-3">
-                <label for="installPass" class="form-label" style="color:white;">Password</label>
+             <div class="alert alert-dark mb-3">
+                <label for="installPass" class="form-label" style="color:rgb(0, 0, 0);">Password</label>
                 <input type="password" class="form-control" id="installPass" name="install_pass" required />
               </div>
-             <button type="submit" class="btn btn-info">Install clamAV</button>
+             <button type="submit" class="btn btn-warning">Install clamAV</button>
             </form>
 
             <!-- Installation Results -->
@@ -166,6 +232,7 @@
               ></div>
             </div>
           </div>
+
         </div>
       </main>
 
