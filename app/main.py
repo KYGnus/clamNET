@@ -928,11 +928,11 @@ def scan_network_topology(network_cidr):
 
     return hosts_info
 
-@app.route('/scan_map')
-def scan_map():
-    network = request.args.get('network', '192.168.1.0/24')
-    hosts = scan_network_topology(network)
-    return render_template('network_map.html', hosts=hosts, network=network)
+# @app.route('/scan_map')
+# def scan_map():
+#     network = request.args.get('network', '192.168.1.0/24')
+#     hosts = scan_network_topology(network)
+#     return render_template('network_map.html', hosts=hosts, network=network)
 
 
 @app.route('/ioc-scan')
