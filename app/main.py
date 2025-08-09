@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response, redirect, url_for, flash ,jsonify
+from flask import Flask, render_template, request, Response, redirect, url_for, flash ,jsonify , send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import platform
 import subprocess
@@ -31,6 +31,12 @@ from collections import defaultdict
 import pandas as pd
 from werkzeug.utils import secure_filename
 import uuid
+from modules import pcap
+
+
+
+
+
 
 
 app = Flask(__name__)
@@ -46,10 +52,10 @@ ADMIN_USERNAME = config.USERNAME
 ADMIN_PASSWORD_HASH = generate_password_hash(f'{config.PASSWORD}')  # Change this password
 # Add to your config.py or in the main file
 IOC_RULES_DIR = './ioc_rules'  # Directory for YARA rules
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'xls','md','conf',
-                    'xlsx', 'ppt', 'pptx', 'exe', 'dll', 'js','config',
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'xls', 'md', 'conf',
+                    'xlsx', 'ppt', 'pptx', 'exe', 'dll', 'js', 'config',
                     'vbs', 'ps1', 'zip', 'rar', '7z',
-                    'jpg', 'jpeg', 'png', 'jfif', 'heic'}
+                    'jpg', 'jpeg', 'png', 'jfif', 'heic', 'pcap', 'pcapng'}
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB max file size
 
 
@@ -1479,6 +1485,263 @@ class EnhancedCFGAnalyzer:
             return context
         except:
             return []
+
+
+
+@app.route('/pcap-scan')
+@login_required
+def pcap_scan_page():
+    return render_template(
+        'pcap_scan.html',
+        os=os.uname().sysname,
+        time=datetime.now().strftime("%H:%M:%S")
+    )
+
+
+@app.route('/upload-pcap-file', methods=['POST'])
+@login_required
+def upload_pcap_file():
+    if 'pcapfile' not in request.files:
+        flash("❌ No file uploaded", "danger")
+        return redirect(url_for('pcap_scan_page'))
+
+    file = request.files['pcapfile']
+    if file.filename == '':
+        flash("⚠ No file selected", "warning")
+        return redirect(url_for('pcap_scan_page'))
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(upload_path)
+
+        try:
+            data = pcap.analyze_pcap(upload_path)
+        except Exception as e:
+            os.remove(upload_path)
+            flash(f"❌ Error analyzing file: {str(e)}", "danger")
+            return redirect(url_for('pcap_scan_page'))
+
+        os.remove(upload_path)
+
+        flash("✅ PCAP file uploaded and analyzed successfully!", "success")
+        return render_template(
+            "pcap_result.html",
+            protocol_count=data["protocol_count"],
+            packets=data["packets"],
+            filename=filename
+        )
+
+    flash("❌ Invalid file type. Please upload a .pcap or .pcapng file.", "danger")
+    return redirect(url_for('pcap_scan_page'))
+
+
+def describe_packet(pkt):
+    # Format timestamp nicely
+    time_str = datetime.fromtimestamp(pkt['timestamp']).strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Human-readable protocol descriptions
+    protocol_desc = {
+        "TCP": "a reliable connection-oriented protocol (TCP)",
+        "UDP": "a fast, connectionless protocol (UDP)",
+        "ICMP": "a network diagnostic message (ICMP)",
+        "HTTP": "web traffic (HTTP)",
+        "DNS": "domain name system query (DNS)",
+        # add more protocols as needed
+    }
+    
+    proto = pkt.get('protocol', 'Unknown').upper()
+    proto_text = protocol_desc.get(proto, f"protocol {proto}")
+    
+    src = pkt.get('src', 'Unknown source')
+    dst = pkt.get('dst', 'Unknown destination')
+    
+    # Build descriptive sentence
+    desc = (
+        f"At {time_str}, a packet was sent from {src} to {dst} using {proto_text}."
+    )
+    
+    # Optionally add extra info, e.g. ports or packet size if available
+    if 'src_port' in pkt and 'dst_port' in pkt:
+        desc += f" Source port: {pkt['src_port']}, destination port: {pkt['dst_port']}."
+    if 'length' in pkt:
+        desc += f" Packet size: {pkt['length']} bytes."
+    
+    return desc
+
+@app.route('/perform-pcap-scan', methods=['POST'])
+@login_required
+def perform_pcap_scan():
+    data = request.get_json()
+    path = data.get('path')
+
+    def generate():
+        yield "data: 🔍 Starting PCAP analysis...\n\n"
+        try:
+            results = pcap.analyze_pcap(path)
+
+            # Human-readable protocol count summary
+            yield "data: 📊 Protocol summary:\n"
+            for proto, count in results['protocol_count'].items():
+                yield f"data: - {count} packets of protocol {proto}\n"
+            yield "\n"
+
+            # Human-readable packet details
+            for pkt in results["packets"]:
+                yield f"data: {describe_packet(pkt)}\n\n"
+
+            yield "data: ✅ PCAP analysis completed\n\n"
+        except Exception as e:
+            yield f"data: ❌ Error during PCAP scan: {str(e)}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream')
+
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PEPPER_PATH = os.path.join(BASE_DIR, 'pepper.py')
+
+
+
+@app.route('/pepper-analysis')
+@login_required
+def pepper_analysis_page():
+    return render_template(
+        'pepper_analysis.html',
+        os=get_os(),
+        ip=get_lan_ip(),
+        time=datetime.now().strftime("%H:%M:%S")
+    )
+
+@app.route('/upload-pepper-file', methods=['POST'])
+@login_required
+def upload_pepper_file():
+    if 'pepperfile' not in request.files:
+        flash("❌ No file uploaded", "danger")
+        return redirect(url_for('pepper_analysis_page'))
+
+    file = request.files['pepperfile']
+    if file.filename == '':
+        flash("⚠ No file selected", "warning")
+        return redirect(url_for('pepper_analysis_page'))
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        try:
+            # Save the uploaded file
+            file.save(upload_path)
+            
+            # Verify pepper.py exists
+            if not os.path.exists(PEPPER_PATH):
+                raise FileNotFoundError(f"Pepper analysis script not found at {PEPPER_PATH}")
+            
+            # Run pepper.py analysis on the uploaded file
+            result = subprocess.run(
+                ['python', PEPPER_PATH, upload_path],
+                capture_output=True,
+                text=True
+            )
+            
+            # Remove the uploaded file after analysis
+            os.remove(upload_path)
+            
+            if result.returncode != 0:
+                flash(f"❌ Error analyzing file: {result.stderr}", "danger")
+                return redirect(url_for('pepper_analysis_page'))
+
+            # Process the result output
+            # Remove ANSI color codes from the output
+            ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+            clean_result = ansi_escape.sub('', result.stdout)
+            clean_result = re.sub(r'<\/?[^>]+>', '', clean_result)  # Remove HTML/XML tags
+            clean_result = re.sub(r'#//[^\s]+', '', clean_result)  # Remove broken URL fragments           
+            # Split into sections for better display
+            sections = []
+            current_section = []
+            for line in clean_result.split('\n'):
+                if line.strip().startswith('=' * 20):  # Section divider
+                    if current_section:
+                        sections.append('\n'.join(current_section))
+                        current_section = []
+                else:
+                    current_section.append(line)
+            if current_section:
+                sections.append('\n'.join(current_section))
+            
+            flash("✅ File uploaded and analyzed successfully!", "success")
+            return render_template(
+                "pepper_result.html",
+                filename=filename,
+                sections=sections,  # Pass cleaned and sectioned results
+                os=get_os(),
+                ip=get_lan_ip(),
+                time=datetime.now().strftime("%H:%M:%S")
+            )
+
+        except Exception as e:
+            # Clean up if something went wrong
+            if os.path.exists(upload_path):
+                os.remove(upload_path)
+            flash(f"❌ Error analyzing file: {str(e)}", "danger")
+            return redirect(url_for('pepper_analysis_page'))
+
+    flash("❌ Invalid file type", "danger")
+    return redirect(url_for('pepper_analysis_page'))
+
+@app.route('/perform-pepper-analysis', methods=['POST'])
+@login_required
+def perform_pepper_analysis():
+    data = request.get_json()
+    path = data.get('path')
+
+    def generate():
+        yield "data: 🔍 Starting Pepper analysis...\n\n"
+        try:
+            process = subprocess.Popen(
+                ['python', PEPPER_PATH, path],  # Use absolute path here
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+
+            # Stream output line by line
+            for line in iter(process.stdout.readline, ''):
+                yield f"data: {line.strip()}\n\n"
+
+            # Check for errors
+            stderr = process.stderr.read()
+            if stderr:
+                yield f"data: ❌ Error: {stderr}\n\n"
+
+            yield "data: ✅ Pepper analysis completed\n\n"
+        except Exception as e:
+            yield f"data: ❌ Error during Pepper analysis: {str(e)}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream')
+
+@app.route('/download/<filename>')
+@login_required
+def download_file(filename):
+    # Secure the filename to prevent directory traversal
+    safe_filename = secure_filename(filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
+    
+    if os.path.exists(file_path):
+        try:
+            return send_file(
+                file_path,
+                as_attachment=True,
+                download_name=safe_filename
+            )
+        except Exception as e:
+            flash(f"Error downloading file: {str(e)}", "danger")
+    else:
+        flash("File not found", "danger")
+    
+    return redirect(url_for('pepper_analysis_page'))
+
 
 @app.route("/about")
 def about():

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PCAP Analysis - clamNET</title>
+
+  <!-- Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="../static/css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+  <!-- Custom Vision Pro Aesthetic -->
+  <style>
+    body {
+      background: radial-gradient(ellipse at center, #000000 0%, #151515 100%);
+      color: #f1f1f1;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h5 {
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar, .sb-sidenav, .card {
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-header {
+      font-weight: 500;
+      font-size: 1rem;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .card-body code {
+      color: #66d9ef;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+    }
+
+    .card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: transparent;
+    }
+
+    .sb-sidenav-footer {
+      font-size: 0.85rem;
+    }
+
+    .text-glow {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    .icon-glow {
+      filter: drop-shadow(0 0 4px #00fff7a4);
+    }
+
+    .breadcrumb {
+      background: transparent;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    a {
+      color: #88f1ff;
+    }
+
+    a:hover {
+      color: #b9f9ff;
+      text-decoration: underline;
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 3rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .upload-area:hover {
+      border-color: rgba(0, 255, 255, 0.5);
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .protocol-badge {
+      font-size: 0.75rem;
+      padding: 0.35em 0.65em;
+      margin-right: 0.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .packet-row {
+      border-left: 4px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .packet-row:hover {
+      background: rgba(0, 255, 255, 0.05);
+      border-left-color: #00ffff;
+    }
+
+    .tcp-badge { background-color: #4e79a7; }
+    .udp-badge { background-color: #f28e2b; }
+    .icmp-badge { background-color: #e15759; }
+    .http-badge { background-color: #76b7b2; }
+    .dns-badge { background-color: #59a14f; }
+    .other-badge { background-color: #edc948; }
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+  <!-- Top Nav -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+    <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
+    <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
+  </nav>
+
+  <!-- Layout -->
+  <div id="layoutSidenav">
+    <!-- Sidebar -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu px-2">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+              Dashboard
+            </a>
+            <div class="sb-sidenav-menu-heading">Tools</div>
+            <a class="nav-link" href="/scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
+              File Scanner
+            </a>
+            <a class="nav-link" href="/install">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Install ClamAV
+            </a>
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              Freshclam
+            </a>
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link active" href="/pcap-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              PCAP Analysis
+            </a>
+            <a class="nav-link" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow"></i></div>
+              About us
+            </a>
+          </div>
+        </div>
+        <div class="sb-sidenav-footer text-light">
+            <a class="nav-link" href="/logout">
+              <div class="sb-nav-link-icon"><i class="fas  fa-sign-out  icon-glow"></i></div>
+              Logout
+            </a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div id="layoutSidenav_content">
+      <main class="p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="mb-3">Network Packet Analysis</h1>
+          <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
+        </div>
+
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+          <li class="breadcrumb-item active">PCAP Analysis</li>
+        </ol>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="row">
+          <div class="col-lg-10">
+            <div class="card text-white mb-4">
+              <div class="alert alert-dark mb-3">
+                <i class="fas fa-upload icon-glow me-2"></i> Upload PCAP File
+              </div>
+              <div class="card-body">
+                <form method="POST" action="/upload-pcap-file" enctype="multipart/form-data">
+                  <div id="uploadArea" class="upload-area mb-4">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3 icon-glow"></i>
+                    <h5>Drag & Drop PCAP files here</h5>
+                    <p class="text-muted">or click to browse</p>
+                    <input type="file" id="pcapfile" name="pcapfile" class="d-none" accept=".pcap,.pcapng" />
+                    <div class="mt-3">
+                      <button type="button" class="btn btn-outline-info" onclick="document.getElementById('pcapfile').click()">
+                        Select PCAP File
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div id="fileInfo" class="d-none mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 id="fileName" class="mb-0"></h6>
+                        <small id="fileSize" class="text-muted"></small>
+                      </div>
+                      <button type="button" id="cancelUpload" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary w-100" id="analyzeButton" disabled>
+                    <i class="fas fa-search me-2"></i> Analyze PCAP
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+<div class="col-lg-12">
+  <div class="card text-white">
+    <div class="alert alert-dark mb-3">
+      <i class="fas fa-info-circle icon-glow me-2"></i> PCAP Analysis
+    </div>
+    <div class="card-body">
+      <h6>What is a PCAP File?</h6>
+      <p class="small">
+        A <strong>Packet Capture (PCAP)</strong> file contains raw network traffic data recorded over a period of time.
+        These files are generated by tools like <em>Wireshark</em>, <em>Tcpdump</em>, or intrusion detection systems.
+        They store detailed information about each network packet — including timestamps, source/destination IP addresses,
+        ports, protocols, and payload data.
+      </p>
+      <p class="small">
+        In <strong>cybersecurity</strong>, PCAP files are essential for:
+        <ul class="small">
+          <li>Investigating <strong>security incidents</strong> such as intrusions or data exfiltration</li>
+          <li>Detecting <strong>malware communications</strong> and Command & Control (C2) traffic</li>
+          <li>Analyzing <strong>network performance</strong> and troubleshooting connectivity issues</li>
+          <li>Applying <strong>YARA</strong> or <strong>Snort</strong> rules for pattern-based threat detection</li>
+        </ul>
+      </p>
+
+      <hr>
+
+      <h6>Supported Features:</h6>
+      <ul class="small">
+        <li>Protocol identification (TCP, UDP, ICMP)</li>
+        <li>HTTP request/response analysis</li>
+        <li>DNS query inspection</li>
+        <li>Packet timeline visualization</li>
+        <li>Malicious pattern detection via security rules</li>
+      </ul>
+
+      <hr>
+
+      <h6>Where PCAP Files are Used:</h6>
+      <ul class="small">
+        <li><strong>Digital Forensics:</strong> Reconstructing attack timelines</li>
+        <li><strong>Threat Hunting:</strong> Identifying suspicious network behavior</li>
+        <li><strong>Incident Response:</strong> Analyzing post-breach evidence</li>
+        <li><strong>Research & Development:</strong> Testing intrusion detection rules</li>
+        <li><strong>Compliance Audits:</strong> Verifying security policy adherence</li>
+      </ul>
+
+      <hr>
+
+      <h6>File Requirements:</h6>
+      <ul class="small">
+        <li>Formats: <code>.pcap</code>, <code>.pcapng</code></li>
+        <li>Max size: 100MB</li>
+        <li>Ensure the file is captured in <strong>promiscuous mode</strong> for complete visibility</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="py-4 mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex justify-content-between align-items-center small">
+            <div class="text-muted">© clamNET 2025</div>
+            <div>
+              <a href="#">Privacy</a>
+              &middot;
+              <a href="#">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById('pcapfile');
+      const uploadArea = document.getElementById('uploadArea');
+      const fileInfo = document.getElementById('fileInfo');
+      const fileName = document.getElementById('fileName');
+      const fileSize = document.getElementById('fileSize');
+      const cancelUpload = document.getElementById('cancelUpload');
+      const analyzeButton = document.getElementById('analyzeButton');
+
+      // Handle file selection
+      fileInput.addEventListener('change', function() {
+        if (this.files.length) {
+          const file = this.files[0];
+          fileName.textContent = file.name;
+          fileSize.textContent = formatFileSize(file.size);
+          uploadArea.classList.add('d-none');
+          fileInfo.classList.remove('d-none');
+          analyzeButton.disabled = false;
+        }
+      });
+
+      // Cancel upload
+      cancelUpload.addEventListener('click', function() {
+        fileInput.value = '';
+        uploadArea.classList.remove('d-none');
+        fileInfo.classList.add('d-none');
+        analyzeButton.disabled = true;
+      });
+
+      // Drag and drop functionality
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#00ffff';
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          const event = new Event('change');
+          fileInput.dispatchEvent(event);
+        }
+      });
+
+      // Format file size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+    });
+  </script>
+</body>
+</html>
