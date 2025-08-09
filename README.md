@@ -1,27 +1,42 @@
 # 🛡️ ClamAV Console Web App
 
-A cross-platform, web-based, open-source console for managing and automating **ClamAV** antivirus across remote **Linux** and **Windows** systems. This app provides tools for **remote installation**, **on-demand scanning**, **database updates**, and **network topology visualization** — all from a single, secure dashboard.
+A cross-platform, web-based, open-source console for managing and automating **ClamAV** antivirus across remote **Linux** and **Windows** systems. This app provides tools for **remote installation**, **on-demand scanning**, **database updates**, **network topology visualization**, **IOC scanning**, **PCAP analysis**, and **malware analysis** — all from a single, secure dashboard.
 
 ---
 
 ## 🚀 Features
 
+### Core ClamAV Management
 - ✅ **Remote Installation** of ClamAV on Linux and Windows systems  
 - 🔍 **Scan Local and Remote Systems** with ClamAV  
 - 🔄 **Automatic Virus Database Updates** across multiple remote hosts  
 - 🌐 **Network Scanning** to detect systems with ClamAV installed  
-- 🗺️ **Network Topology Map** with OS guessing via TTL  
+
+### Network Analysis
 - 📊 **System Monitoring**: CPU, RAM, and network usage  
-- 🔐 **Login-Authenticated Dashboard** (Flask-Login)  
+- 🔎 **PCAP Analysis** for network traffic inspection  
+- 🌍 **Network Protocol Visualization**  
+
+### Security Analysis
+- 🔐 **IOC Scanning** with YARA rules and hash matching  
+- 🧪 **Malware Analysis** with Pepper framework  
+- 🕵️ **Control Flow Graph Analysis** for binary inspection  
+- 📝 **File Metadata Analysis**  
+
+### Platform Features
 - 🧰 CLI and GUI elements powered by Flask + Jinja2  
 - 📦 Multi-threaded with real-time logs using Server-Sent Events (SSE)  
 - 🖥️ Cross-platform: supports both **Linux** and **Windows** servers  
+- 🔐 **Login-Authenticated Dashboard** (Flask-Login)  
 
 ---
 
 ## 📸 Screenshots
 
-![clamNET](./clamNET.png)
+![clamNET Dashboard](./clamNET.png)
+![clamNET scan](./clamscan.png)
+![IOC Scanner](./ioc_scan.png)
+![PCAP Analysis](./pcap_analysis.png)
 
 ---
 
@@ -29,35 +44,52 @@ A cross-platform, web-based, open-source console for managing and automating **C
 
 ### 📋 Prerequisites
 
-- Python 3.11
+- Python 3.11+
 - `pip` / `virtualenv`
 - SSH access to remote systems
 - ClamAV MSI for Windows installs (`clamav-1.*.*.win.x64.msi`) should be present on the server
+- Optional dependencies for advanced features:
+  - `libpcap` for PCAP analysis
+  - `yara` for IOC scanning
+  - `pepper` for malware analysis
 
 ### 🔧 Setup
 
 ```bash
 git clone https://github.com/KYGnus/clamNET.git
-cd clamNEt
+cd clamNET
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-````
+```
 
-**Note:This Requirements is for python 3.11.13**
+**Note:** These requirements are for Python 3.11.13
 
+### Advanced Feature Setup
+For PCAP analysis:
+```bash
+sudo apt-get install libpcap-dev  # Debian/Ubuntu
+sudo yum install libpcap-devel    # CentOS/RHEL
+```
 
-### 🔐 Default Login
+For Pepper analysis:
+```bash
+git clone https://github.com/KYGnus/pepper.git
+cp pepper/pepper.py ./clamNET/
+```
+
+---
+
+## 🔐 Default Login
 
 | Username | Password |
 | -------- | -------- |
-| config.USERNAME    | config.PASSWORD    |
+| `config.USERNAME` | `config.PASSWORD` |
 
-> ⚠️ Change the admin password in `main.py` before deploying to production:
-
-```python
-ADMIN_PASSWORD_HASH = generate_password_hash(f'{config.PASSWORD}')
-```
+> ⚠️ **Change the admin password in `main.py` before deploying to production**:
+> ```python
+> ADMIN_PASSWORD_HASH = generate_password_hash('your_secure_password_here')
+> ```
 
 ---
 
@@ -71,31 +103,47 @@ Then visit: [http://localhost:5005](http://localhost:5005)
 
 ---
 
-## 🌐 Network Topology
+## 🌐 Network Features
 
-Scan a network (e.g., `192.168.1.0/24`) to discover active hosts, detect OS via TTL, and visualize the network structure.
+### Topology Scanning
+Scan a network (e.g., `192.168.1.0/24`) to:
+- Discover active hosts
+- Detect OS via TTL analysis
+- Visualize network structure
+- Identify ClamAV installations
 
-* Ping sweep with TTL-based OS fingerprinting
-* Displays IP, hostname (if resolvable), TTL, and OS guess
+### PCAP Analysis
+- Upload packet capture files (.pcap, .pcapng)
+- Protocol distribution visualization
+- Traffic pattern analysis
+- Suspicious activity detection
 
 ---
 
-## 🛠️ Usage
+## 🛠️ Usage Guide
 
-### 🔧 Installation of ClamAV oh hosts
+### 🔧 ClamAV Installation
+1. Navigate to the Install page
+2. Enter target IPs (comma-separated)
+3. Provide SSH credentials
+4. The app will auto-detect OS and install the appropriate ClamAV version
 
-* Enter host IPs (comma-separated), SSH username and password
-* App detects OS and installs the correct ClamAV version
+### 🔄 Database Updates
+1. Go to the Update page
+2. Select target hosts
+3. Monitor real-time update progress
 
-### 🔄 Updating ClamAV Databases on Hosts
+### 🧪 Security Scanning
+#### Basic Scanning:
+- Select local or remote scan
+- Choose directory path
+- View real-time results
 
-* Enter the same credentials and hosts
-* Uses `freshclam` or Windows updater remotely
-
-### 🧪 Virus Scan
-
-* Specify a directory path to scan (local or remote)
-* Results stream live using SSE
+#### Advanced Scanning:
+- **IOC Scanner**: Upload files for YARA rule matching and hash analysis
+- **PCAP Analyzer**: Inspect network traffic patterns
+- **Pepper Analysis**: Perform deep malware analysis on executables
+- **CFG Analysis**: Examine binary control flow graphs
 
 ---
 
@@ -103,32 +151,45 @@ Scan a network (e.g., `192.168.1.0/24`) to discover active hosts, detect OS via 
 
 ```text
 .
-├── main.py                # Main Flask app with all routes and logic
-├── templates/             # HTML templates for UI
-├── static/                # CSS/JS if needed
-├── clamav-1.4.3.win.x64.msi  # Optional: Windows installer for ClamAV
-├── requirements.txt       # Required Python packages
+├── main.py                # Main Flask application
+├── modules/               # Additional functional modules
+│   ├── pcap.py            # PCAP analysis
+│   └── installer.py       # Remote installation
+├── templates/             # HTML templates
+├── static/                # CSS/JS assets
+├── ioc_rules/             # YARA rules for IOC scanning
+├── uploads/               # File upload directory
+├── clamav-*.win.x64.msi   # Windows installer
+├── pepper.py              # Malware analysis tool
+└── requirements.txt       # Python dependencies
 ```
 
 ---
 
 ## 🧪 Tested Platforms
 
-| OS         | Remote Install | Scanning | Update |
-| ---------- | -------------- | -------- | ------ |
-| Ubuntu     | ✅              | ✅        | ✅      |
-| openSUSE   | ✅              | ✅        | ✅      |
-| Windows 10 | ✅              | ✅        | ✅      |
----
+| OS         | Remote Install | Scanning | Update | IOC Scan | PCAP Analysis |
+| ---------- | -------------- | -------- | ------ | -------- | ------------- |
+| Ubuntu     | ✅              | ✅        | ✅      | ✅        | ✅             |
+| openSUSE   | ✅              | ✅        | ✅      | ✅        | ✅             |
+| Windows 10 | ✅              | ✅        | ✅      | ✅        | ✅             |
+| macOS      | ❌              | ✅        | ❌      | ✅        | ✅             |
 
+---
 
 ## 🤝 Contributing
 
-1. Fork the repo
-2. Create a branch: `git checkout -b feature-name`
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
 3. Commit your changes: `git commit -m "Add feature"`
 4. Push to your fork: `git push origin feature-name`
 5. Submit a pull request
+
+**Development Setup:**
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
+```
 
 ---
 
@@ -141,11 +202,8 @@ Scan a network (e.g., `192.168.1.0/24`) to discover active hosts, detect OS via 
 ## 📞 Contact
 
 * **Koosha Yeganeh**
-  Email: [kygnus.co@proton.me](mailto:kygnus.co@proton.me)
-  Website: [kygnus.github.io](https://kygnus.github.io/)
-
----
-
-> Made with 💻 and ☕ by Koosha Yeganeh | Free software for a more secure world.
+  - Email: [kygnus.co@proton.me](mailto:kygnus.co@proton.me)
+  - Website: [kygnus.github.io](https://kygnus.github.io/)
+  - GitHub: [@KYGnus](https://github.com/KYGnus)
 
 
