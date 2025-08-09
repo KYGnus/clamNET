@@ -29,7 +29,7 @@ A cross-platform, web-based, open-source console for managing and automating **C
 
 ### 📋 Prerequisites
 
-- Python 3.9+ 
+- Python 3.11
 - `pip` / `virtualenv`
 - SSH access to remote systems
 - ClamAV MSI for Windows installs (`clamav-1.*.*.win.x64.msi`) should be present on the server
@@ -43,6 +43,9 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ````
+
+**Note:This Requirements is for python 3.11.13**
+
 
 ### 🔐 Default Login
 
