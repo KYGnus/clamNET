@@ -1,3 +1,5 @@
 USERNAME = "admin"
 PASSWORD = "admin"
 SECRET_KEY = "clamNET"
+MAINDIR = "/tmp/clamnet"
+UPLOADDIR = "/tmp/clamnet/uploads"

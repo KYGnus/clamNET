@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response, redirect, url_for, flash ,jsonify , send_file
+from flask import Flask, render_template, request, Response, redirect, url_for, flash ,jsonify , send_file , session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import platform
 import subprocess
@@ -56,9 +56,21 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'xls', 'md', 'conf',
                     'xlsx', 'ppt', 'pptx', 'exe', 'dll', 'js', 'config',
                     'vbs', 'ps1', 'zip', 'rar', '7z',
                     'jpg', 'jpeg', 'png', 'jfif', 'heic', 'pcap', 'pcapng'}
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB max file size
 
 
+
+clamNETApp = os.path.join(config.MAINDIR)  # main path
+os.makedirs(clamNETApp, exist_ok=True)
+
+UPLOADS = os.path.join(config.UPLOADDIR)  # main path
+os.makedirs(UPLOADS, exist_ok=True)
 
 
 class User(UserMixin):
@@ -960,13 +972,20 @@ def upload_ioc_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'success': False, 'message': 'No selected file'}), 400
+    
+    # Check file size
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)
+    if file_size > MAX_FILE_SIZE:
+        return jsonify({'success': False, 'message': 'File size exceeds maximum allowed (100MB)'}), 400
         
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(upload_path)
         
-        # Scan the file
+        # Scan the file without saving results
         scanner = IOCScanner()
         results = scanner.scan_file(upload_path)
         
@@ -980,9 +999,7 @@ def upload_ioc_file():
         
     return jsonify({'success': False, 'message': 'Invalid file type'}), 400
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/perform-ioc-scan', methods=['POST'])
 @login_required
@@ -1510,13 +1527,22 @@ def upload_pcap_file():
         flash("⚠ No file selected", "warning")
         return redirect(url_for('pcap_scan_page'))
 
-    if file and allowed_file(file.filename):
+    # Check file size
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)
+    if file_size > MAX_FILE_SIZE:
+        flash("❌ File size exceeds maximum allowed (100MB)", "danger")
+        return redirect(url_for('pcap_scan_page'))
+
+    if file and allowed_file(file.filename) and file.filename.lower().endswith(('.pcap', '.pcapng')):
         filename = secure_filename(file.filename)
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(upload_path)
 
         try:
             data = pcap.analyze_pcap(upload_path)
+            
         except Exception as e:
             os.remove(upload_path)
             flash(f"❌ Error analyzing file: {str(e)}", "danger")
@@ -1625,70 +1651,99 @@ def upload_pepper_file():
         flash("⚠ No file selected", "warning")
         return redirect(url_for('pepper_analysis_page'))
 
-    if file and allowed_file(file.filename):
+    # Check file size (limit to 100MB)
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)
+    if file_size > MAX_FILE_SIZE:
+        flash("❌ File size exceeds maximum allowed (100MB)", "danger")
+        return redirect(url_for('pepper_analysis_page'))
+
+    # Check file extension (only allow EXE for pepper analysis)
+    if not (file and allowed_file(file.filename) and file.filename.lower().endswith('.exe')):
+        flash("❌ Only .exe files are allowed for Pepper analysis", "danger")
+        return redirect(url_for('pepper_analysis_page'))
+
+    try:
+        # Save the uploaded file
         filename = secure_filename(file.filename)
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(upload_path)
         
-        try:
-            # Save the uploaded file
-            file.save(upload_path)
-            
-            # Verify pepper.py exists
-            if not os.path.exists(PEPPER_PATH):
-                raise FileNotFoundError(f"Pepper analysis script not found at {PEPPER_PATH}")
-            
-            # Run pepper.py analysis on the uploaded file
+        # Generate result filename with timestamp and random string for uniqueness
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        random_str = uuid.uuid4().hex[:6]
+        result_filename = f"pepper_result_{timestamp}_{random_str}.txt"
+        result_path = os.path.join(UPLOADS, result_filename)
+        
+        # Verify pepper.py exists
+        if not os.path.exists(PEPPER_PATH):
+            raise FileNotFoundError(f"Pepper analysis script not found at {PEPPER_PATH}")
+        
+        # Run pepper.py analysis on the uploaded file and save to result file
+        with open(result_path, 'w') as result_file:
             result = subprocess.run(
                 ['python', PEPPER_PATH, upload_path],
-                capture_output=True,
+                stdout=result_file,
+                stderr=subprocess.PIPE,
                 text=True
             )
-            
-            # Remove the uploaded file after analysis
-            os.remove(upload_path)
-            
-            if result.returncode != 0:
-                flash(f"❌ Error analyzing file: {result.stderr}", "danger")
-                return redirect(url_for('pepper_analysis_page'))
-
-            # Process the result output
-            # Remove ANSI color codes from the output
-            ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-            clean_result = ansi_escape.sub('', result.stdout)
-            clean_result = re.sub(r'<\/?[^>]+>', '', clean_result)  # Remove HTML/XML tags
-            clean_result = re.sub(r'#//[^\s]+', '', clean_result)  # Remove broken URL fragments           
-            # Split into sections for better display
-            sections = []
-            current_section = []
-            for line in clean_result.split('\n'):
-                if line.strip().startswith('=' * 20):  # Section divider
-                    if current_section:
-                        sections.append('\n'.join(current_section))
-                        current_section = []
-                else:
-                    current_section.append(line)
-            if current_section:
-                sections.append('\n'.join(current_section))
-            
-            flash("✅ File uploaded and analyzed successfully!", "success")
-            return render_template(
-                "pepper_result.html",
-                filename=filename,
-                sections=sections,  # Pass cleaned and sectioned results
-                os=get_os(),
-                ip=get_lan_ip(),
-                time=datetime.now().strftime("%H:%M:%S")
-            )
-
-        except Exception as e:
-            # Clean up if something went wrong
-            if os.path.exists(upload_path):
-                os.remove(upload_path)
-            flash(f"❌ Error analyzing file: {str(e)}", "danger")
+        
+        # Remove the uploaded file after analysis
+        os.remove(upload_path)
+        
+        if result.returncode != 0:
+            os.remove(result_path)  # Clean up failed analysis
+            flash(f"❌ Error analyzing file: {result.stderr}", "danger")
             return redirect(url_for('pepper_analysis_page'))
 
-    flash("❌ Invalid file type", "danger")
-    return redirect(url_for('pepper_analysis_page'))
+        # Store the result file path in session for download
+        session['latest_pepper_result'] = result_filename
+        
+        # Read the result file for display
+        with open(result_path, 'r') as f:
+            clean_result = f.read()
+        
+        # Process the output for display
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        clean_result = ansi_escape.sub('', clean_result)
+        clean_result = re.sub(r'<\/?[^>]+>', '', clean_result)
+        clean_result = re.sub(r'#//[^\s]+', '', clean_result)
+        
+        sections = []
+        current_section = []
+        for line in clean_result.split('\n'):
+            if line.strip().startswith('=' * 20):
+                if current_section:
+                    sections.append('\n'.join(current_section))
+                    current_section = []
+            else:
+                current_section.append(line)
+        if current_section:
+            sections.append('\n'.join(current_section))
+        
+        flash("✅ File uploaded and analyzed successfully!", "success")
+        return render_template(
+            "pepper_result.html",
+            filename=filename,
+            sections=sections,
+            result_file=result_filename,
+            os=get_os(),
+            ip=get_lan_ip(),
+            time=datetime.now().strftime("%H:%M:%S")
+        )
+
+    except Exception as e:
+        # Clean up if something went wrong
+        if os.path.exists(upload_path):
+            os.remove(upload_path)
+        if 'result_path' in locals() and os.path.exists(result_path):
+            os.remove(result_path)
+        flash(f"❌ Error analyzing file: {str(e)}", "danger")
+        return redirect(url_for('pepper_analysis_page'))
+
+
+
 
 @app.route('/perform-pepper-analysis', methods=['POST'])
 @login_required
@@ -1721,26 +1776,30 @@ def perform_pepper_analysis():
 
     return Response(generate(), mimetype='text/event-stream')
 
-@app.route('/download/<filename>')
+@app.route('/download-pepper-result')
 @login_required
-def download_file(filename):
-    # Secure the filename to prevent directory traversal
-    safe_filename = secure_filename(filename)
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
+def download_pepper_result():
+    if 'latest_pepper_result' not in session:
+        flash("No analysis result available for download", "warning")
+        return redirect(url_for('pepper_analysis_page'))
     
-    if os.path.exists(file_path):
-        try:
-            return send_file(
-                file_path,
-                as_attachment=True,
-                download_name=safe_filename
-            )
-        except Exception as e:
-            flash(f"Error downloading file: {str(e)}", "danger")
-    else:
-        flash("File not found", "danger")
+    result_filename = session['latest_pepper_result']
+    result_path = os.path.join(UPLOADS, result_filename)
     
-    return redirect(url_for('pepper_analysis_page'))
+    if not os.path.exists(result_path):
+        flash("Result file not found", "danger")
+        return redirect(url_for('pepper_analysis_page'))
+    
+    try:
+        return send_file(
+            result_path,
+            as_attachment=True,
+            download_name=f"pepper_analysis_{datetime.now().strftime('%Y%m%d')}.txt",
+            mimetype='text/plain'
+        )
+    except Exception as e:
+        flash(f"Error downloading file: {str(e)}", "danger")
+        return redirect(url_for('pepper_analysis_page'))
 
 
 @app.route("/about")
