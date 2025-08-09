@@ -84,6 +84,9 @@
     .glow-text {
       text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
     }
+    h6{
+      color:white;
+    }
   </style>
 </head>
 
@@ -106,8 +109,8 @@
               <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
-            <a class="nav-link active" href="/about">
-              <div class="sb-nav-link-icon"><i class="fas fa-info-circle"></i></div>
+            <a class="nav-link active" href="/about" style="color:cyan;">
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:cyan;"></i></div>
               About
             </a>
           </div>
@@ -175,7 +178,7 @@
                 <h4 class="card-title text-info">
                   <i class="fas fa-search me-2"></i> Deep Analysis
                 </h4>
-                <p class="card-text">
+                <p class="card-text" style="color: white;">
                   Combines signature-based detection with heuristic analysis and 
                   behavioral monitoring for comprehensive threat identification.
                 </p>
@@ -194,7 +197,7 @@
                 <h4 class="card-title text-success">
                   <i class="fas fa-network-wired me-2"></i> Network Integration
                 </h4>
-                <p class="card-text">
+                <p class="card-text" style="color: white;">
                   Scan entire network segments remotely with parallel processing 
                   and centralized reporting.
                 </p>
@@ -213,7 +216,7 @@
                 <h4 class="card-title text-warning">
                   <i class="fas fa-project-diagram me-2"></i> CFG Deobfuscation
                 </h4>
-                <p class="card-text">
+                <p class="card-text" style="color: white;">
                   Advanced control flow graph analysis to detect and reverse 
                   obfuscated malware execution patterns.
                 </p>
@@ -326,21 +329,48 @@
         </div>
 
 
-        <div class="card text-white bg-dark">
-          <div class="card-header bg-danger">
-            <i class="fas fa-balance-scale me-2"></i> About US
-          </div>
-          <div class="card-body">
-            <h4>KYGnus</h4>
-            <p>
-                website  ➜  <a href="http://kygnus.de" style="color:white;text-decoration: none;">KYGnus</a>
-            </p>
-            <p>
-                Github ➜ <a href="https://github.com/KYGnus" style="color:white;text-decoration: none;">GitHub</a> 
-            </p>
-
-          </div>
+<div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);">
+  <div class="card-header border-0" style="background: linear-gradient(90deg, #d63333 0%, #b02a2a 100%);">
+    <div class="d-flex align-items-center">
+      <i class="fas fa-balance-scale me-2" style="font-size: 1.2rem;"></i>
+      <h4 class="mb-0" style="font-weight: 600; letter-spacing: 0.5px;">About KYGnus</h4>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="mb-4">
+      <h5 class="text-gradient" style="background: linear-gradient(90deg, #ffffff 0%, #d63333 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">Security Research & Development</h5>
+      <p class="text-muted">Advanced threat analysis and cybersecurity solutions</p>
+    </div>
+    
+    <div class="link-card mb-3 p-3 rounded" style="background: rgba(255,255,255,0.05); transition: all 0.3s ease;">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-globe me-3" style="color: #d63333; font-size: 1.5rem;"></i>
+        <div>
+          <h6 class="mb-1" style="font-weight: 500;" >Website</h6>
+          <a href="http://kygnus.de" class="stretched-link" style="color: #f8f9fa; text-decoration: none; position: relative;">
+            <span style="border-bottom: 1px dashed rgba(255,255,255,0.3);">kygnus.de</span>
+          </a>
         </div>
+      </div>
+    </div>
+    
+    <div class="link-card p-3 rounded" style="background: rgba(255,255,255,0.05); transition: all 0.3s ease;">
+      <div class="d-flex align-items-center">
+        <i class="fab fa-github me-3" style="color: #d63333; font-size: 1.5rem;"></i>
+        <div>
+          <h6 class="mb-1" style="font-weight: 500;" >GitHub</h6>
+          <a href="https://github.com/KYGnus" class="stretched-link" style="color: #f8f9fa; text-decoration: none; position: relative;">
+            <span style="border-bottom: 1px dashed rgba(255,255,255,0.3);">github.com/KYGnus</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-4 pt-3 border-top border-secondary">
+      <small class="text-muted">© 2025 KYGnus | All Rights Reserved</small>
+    </div>
+  </div>
+</div>
 
 
       </main>
