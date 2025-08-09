@@ -187,8 +187,13 @@ Scan a network (e.g., `192.168.1.0/24`) to:
 
 **Development Setup:**
 ```bash
-pip install -r requirements-dev.txt
-pre-commit install
+git clone https://github.com/KYGnus/clamNET.git
+cd clamNET
+python3.12 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cd app
+python main.py
 ```
 
 ---
