@@ -11,89 +11,176 @@
   <link href="../static/css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <!-- Custom Vision Pro Aesthetic -->
+  <!-- Red and Black Aesthetic -->
   <style>
-    body {
-      background: radial-gradient(ellipse at center, #000000 0%, #151515 100%);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-    }
 
-    h1, h2, h5 {
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
-    }
+  body {
+    background-color: #fffefe;
+    font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #000000;
+    padding: 40px 0;
+    min-height: 100vh;
+  }
 
-    .navbar, .sb-sidenav, .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+  h1, h2, h3, h4, h5 {
+    font-weight: 700;
+    color: #fff;
+  }
 
-    .card-header {
-      font-weight: 500;
-      font-size: 1rem;
-      color: #fff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
-    }
+  h1 {
+    border-bottom: 2px solid #cc0000;
+    padding-bottom: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
 
-    .card-body code {
-      color: #66d9ef;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
-    }
+  /* Navbar */
+  .navbar, .sb-sidenav {
+    background-color: #121212 !important;
+    border-bottom: 2px solid #cc0000;
+  }
 
-    .card-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-    }
+  .navbar-brand {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff !important;
+  }
 
-    .sb-sidenav-footer {
-      font-size: 0.85rem;
-    }
+  .navbar-brand:hover {
+    color: #ff4d4d !important;
+  }
 
-    .text-glow {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-    }
+  /* Sidebar Links */
+  .nav-link {
+    color: #bbb;
+    padding: 0.65rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: background 0.2s, color 0.2s;
+  }
 
-    .icon-glow {
-      filter: drop-shadow(0 0 4px #00fff7a4);
-    }
+  .nav-link:hover {
+    background-color: rgba(204, 0, 0, 0.2);
+    color: #fff;
+  }
 
-    .breadcrumb {
-      background: transparent;
-    }
+  .nav-link.active {
+    background-color: #cc0000;
+    color: #fff;
+  }
 
-    footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
+  .sb-sidenav .nav-link .sb-nav-link-icon {
+    color: #cc0000;
+  }
 
-    a {
-      color: #88f1ff;
-    }
+  /* Cards */
+  .card {
+    border: none;
+    border-radius: 6px;
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease;
+  }
 
-    a:hover {
-      color: #b9f9ff;
-      text-decoration: underline;
-    }
-
-    canvas {
-  background: transparent;
-  border-radius: 50%;
+/* Cards - Red Hat Style */
+.card {
+  border: none;
+  border-radius: 6px;
+  background-color: #262626;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-  </style>
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+}
+
+.card-header {
+  background-color: #cc0000;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+  border-radius: 6px 6px 0 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+  background-color: #1c1c1c;
+  color: #ddd;
+}
+
+.card-body h5 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.card-body h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-body p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.card-footer {
+  background: #1c1c1c;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem;
+  color: #999;
+  border-radius: 0 0 6px 6px;
+}
+
+
+  /* Alerts */
+  .alert-dark {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-left: 4px solid #cc0000;
+    border-radius: 6px;
+    padding: 1rem;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    background: transparent;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .breadcrumb-item.active {
+    color: #ff4d4d;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background-color: #121212;
+    color: #aaa;
+    padding: 1rem 0;
+  }
+
+  /* Canvas Usage Circles */
+  canvas {
+    background: transparent;
+    border-radius: 50%;
+  }
+</style>
+
 </head>
 
 <body class="sb-nav-fixed">
 
   <!-- Top Nav -->
-  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+  <nav class="sb-topnav navbar navbar-expand navbar-dark px-4">
     <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
     <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
   </nav>
@@ -107,47 +194,47 @@
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
             <a class="nav-link active" href="/">
-              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
             <div class="sb-sidenav-menu-heading">Tools</div>
             <a class="nav-link" href="/scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
               File Scanner
             </a>
             <a class="nav-link" href="/install">
-              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:#d63333;"></i></div>
               Install ClamAV
             </a>
             <a class="nav-link" href="/update">
-              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:#d63333;"></i></div>
               Freshclam
             </a>
             <a class="nav-link" href="/ioc-scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:#d63333;"></i></div>
               IOC Scan
             </a>
             <a class="nav-link" href="/cfg-analysis">
-              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:#d63333;"></i></div>
               CFG Analysis
             </a>
             <a class="nav-link" href="/pcap-scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:#d63333;"></i></div>
               PCAP Scan
             </a>
             <a class="nav-link" href="/pepper-analysis">
-              <div class="sb-nav-link-icon"><i class="fas fa-file-code " style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-file-code" style="color:#d63333;"></i></div>
               Pepper
             </a>
             <a class="nav-link" href="/about">
-              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:cyan;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:#d63333;"></i></div>
               About
             </a>
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
             <a class="nav-link" href="/logout">
-              <div class="sb-nav-link-icon"><i class="fas  fa-sign-out  icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
               Logout
             </a>
         </div>
@@ -158,7 +245,7 @@
     <div id="layoutSidenav_content">
       <main class="p-4">
         <div class="d-flex justify-content-between align-items-center">
-          <h1 class="mb-3 text-glow">clamNET</h1>
+          <h1 class="mb-3 text-glow" style="color: #000000;">clamNET</h1>
           <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
         </div>
 
@@ -173,9 +260,9 @@
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5>Local IP Address</h5>
-                  <h2 >{{ ip }}</h2>
+                  <h2>{{ ip }}</h2>
                 </div>
-                <i class="fas fa-network-wired fs-1 icon-glow"></i>
+                <i class="fas fa-network-wired fs-1"></i>
               </div>
               <div class="card-footer d-flex justify-content-between">
                 <span>Network Interface</span><i class="fas fa-angle-right"></i>
@@ -190,7 +277,7 @@
                   <h5>Operating System</h5>
                   <h2>{{ os }}</h2>
                 </div>
-                <i class="fas fa-laptop fs-1 icon-glow"></i>
+                <i class="fas fa-laptop fs-1"></i>
               </div>
               <div class="card-footer d-flex justify-content-between">
                 <span>Platform</span><i class="fas fa-angle-right"></i>
@@ -205,7 +292,7 @@
                   <h5>System Time</h5>
                   <h2>{{ time }}</h2>
                 </div>
-                <i class="fas fa-clock fs-1 icon-glow"></i>
+                <i class="fas fa-clock fs-1"></i>
               </div>
               <div class="card-footer d-flex justify-content-between">
                 <span>Last Updated</span><i class="fas fa-angle-right"></i>
@@ -219,7 +306,7 @@
           <div class="col-xl-6 mb-4">
             <div class="card text-white">
               <div class="alert alert-dark mb-3">
-                <i class="fas fa-terminal me-2 icon-glow"></i> ClamAV Path on Linux
+                <i class="fas fa-terminal me-2"></i> ClamAV Path on Linux
               </div>
               <div class="card-body">
                 <p><strong>Executable:</strong> <code>{{ clamav_path_linux }}</code></p>
@@ -231,7 +318,7 @@
           <div class="col-xl-6 mb-4">
             <div class="card text-white">
                <div class="alert alert-dark mb-3">
-                <i class="fab fa-windows me-2 icon-glow"></i> ClamAV Path on Windows
+                <i class="fab fa-windows me-2"></i> ClamAV Path on Windows
               </div>
               <div class="card-body">
                 <p><strong>Executable:</strong> <code>{{ clamav_path_windows }}</code></p>
@@ -245,7 +332,7 @@
             <div class="col-md-6">
               <div class="card text-white">
                  <div class="alert alert-dark mb-3">
-                  <i class="fas fa-microchip icon-glow me-2"></i> CPU Usage
+                  <i class="fas fa-microchip me-2"></i> CPU Usage
                 </div>
                 <div class="card-body text-center">
                   <canvas id="cpuCanvas" width="200" height="200"></canvas>
@@ -256,7 +343,7 @@
             <div class="col-md-6">
               <div class="card text-white">
                  <div class="alert alert-dark mb-3">
-                  <i class="fas fa-memory icon-glow me-2"></i> RAM Usage
+                  <i class="fas fa-memory me-2"></i> RAM Usage
                 </div>
                 <div class="card-body text-center">
                   <canvas id="ramCanvas" width="200" height="200"></canvas>
@@ -270,7 +357,7 @@
           <div class="col-xl-12 col-md-12 mb-4">
             <div class="card text-white">
               <div class="alert alert-dark mb-3">
-                <i class="fas fa-network-wired icon-glow me-2"></i> Network Packet Status
+                <i class="fas fa-network-wired me-2"></i> Network Packet Status
               </div>
               <div class="card-body">
                 <p><strong>Packets Sent:</strong> <span class="text-glow">{{ net_packets_sent }}</span></p>
@@ -283,8 +370,6 @@
         </div>
 
       </main>
-
-
 
       <!-- Footer -->
       <footer class="py-4 mt-auto">
@@ -339,11 +424,10 @@ window.onload = function() {
   document.getElementById('cpuPercent').textContent = cpu + '%';
   document.getElementById('ramPercent').textContent = ram + '%';
 
-  drawUsage('cpuCanvas', cpu, '#00ffff');
-  drawUsage('ramCanvas', ram, '#ff66cc');
+  drawUsage('cpuCanvas', cpu, '#d63333');
+  drawUsage('ramCanvas', ram, '#6f1d1d');
 }
 </script>
-
 
 </body>
 </html>

@@ -12,76 +12,159 @@
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
   <style>
-    body {
-      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-    }
+body {
+    background-color: #fffafa;
+    font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #000000;
+    padding: 40px 0;
+    min-height: 100vh;
+  }
 
-    h1, h2, h5 {
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
-    }
+  h1, h2, h3, h4, h5 {
+    font-weight: 700;
+    color: #fff;
+  }
 
-    .navbar, .sb-sidenav, .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+  h1 {
+    border-bottom: 2px solid #cc0000;
+    padding-bottom: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
 
-    .card-header {
-      font-weight: 500;
-      font-size: 1rem;
-      color: #fff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
-    }
+  /* Navbar */
+  .navbar, .sb-sidenav {
+    background-color: #121212 !important;
+    border-bottom: 2px solid #cc0000;
+  }
 
-    .card-body code {
-      color: #66d9ef;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
-    }
+  .navbar-brand {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff !important;
+  }
 
-    .card-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-    }
+  .navbar-brand:hover {
+    color: #ff4d4d !important;
+  }
 
-    .sb-sidenav-footer {
-      font-size: 0.85rem;
-    }
+  /* Sidebar Links */
+  .nav-link {
+    color: #bbb;
+    padding: 0.65rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: background 0.2s, color 0.2s;
+  }
 
-    .text-glow {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-    }
+  .nav-link:hover {
+    background-color: rgba(204, 0, 0, 0.2);
+    color: #fff;
+  }
 
-    .icon-glow {
-      filter: drop-shadow(0 0 4px #00fff7a4);
-    }
+  .nav-link.active {
+    background-color: #cc0000;
+    color: #fff;
+  }
 
-    .breadcrumb {
-      background: transparent;
-    }
+  .sb-sidenav .nav-link .sb-nav-link-icon {
+    color: #cc0000;
+  }
 
-    #scanResults {
-      font-family: monospace;
-      background-color: rgba(0, 0, 0, 0.6);
-      color: #00ff7f;
-    }
+  /* Cards */
+  .card {
+    border: none;
+    border-radius: 6px;
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease;
+  }
 
-    a {
-      color: #88f1ff;
-    }
+/* Cards - Red Hat Style */
+.card {
+  border: none;
+  border-radius: 6px;
+  background-color: #262626;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
 
-    a:hover {
-      color: #b9f9ff;
-      text-decoration: underline;
-    }
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+}
+
+.card-header {
+  background-color: #cc0000;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+  border-radius: 6px 6px 0 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+  background-color: #1c1c1c;
+  color: #ddd;
+}
+
+.card-body h5 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.card-body h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-body p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.card-footer {
+  background: #1c1c1c;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem;
+  color: #999;
+  border-radius: 0 0 6px 6px;
+}
+
+
+  /* Alerts */
+  .alert-dark {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-left: 4px solid #cc0000;
+    border-radius: 6px;
+    padding: 1rem;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    background: transparent;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .breadcrumb-item.active {
+    color: #ff4d4d;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background-color: #121212;
+    color: #aaa;
+    padding: 1rem 0;
+  }
     
   </style>
 </head>
@@ -106,16 +189,16 @@
               Dashboard
             </a>
             <div class="sb-sidenav-menu-heading">Tools</div>
-            <a class="nav-link" href="/scan" style="color:cyan;">
-              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:cyan;"></i></div>
+            <a class="nav-link" href="/scan" style="color:#d63333;">
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
               File Scanner
             </a>
             <a class="nav-link" href="/install">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow" style="color:#d63333;"></i></div>
               Install ClamAV
             </a>
             <a class="nav-link" href="/update">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow" style="color:#d63333;"></i></div>
               Freshclam
             </a>
      
@@ -131,7 +214,7 @@
     <!-- Main Content -->
     <div id="layoutSidenav_content">
       <main class="p-4">
-        <h1 class="mb-3 text-glow">File Scanner</h1>
+        <h1 class="mb-3 text-glow" style="color: #000000;">File Scanner</h1>
         <ol class="breadcrumb mb-4">
           <li class="breadcrumb-item active">Scan files for viruses</li>
         </ol>

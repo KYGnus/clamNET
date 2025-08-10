@@ -11,33 +11,102 @@
   <link href="../static/css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <!-- Custom Vision Pro Aesthetic -->
+  <!-- Red and Black Aesthetic -->
   <style>
     body {
-      background: radial-gradient(ellipse at center, #000000 0%, #151515 100%);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
+      background-color: #fffefe;
+      font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #000000;
+      padding: 40px 0;
+      min-height: 100vh;
     }
 
-    h1, h2, h5 {
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    h1, h2, h3, h4, h5 {
+      font-weight: 700;
+      color: #000;
     }
 
-    .navbar, .sb-sidenav, .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    h1 {
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Navbar */
+    .navbar, .sb-sidenav {
+      background-color: #121212 !important;
+      border-bottom: 2px solid #cc0000;
+    }
+
+    .navbar-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff !important;
+    }
+
+    .navbar-brand:hover {
+      color: #ff4d4d !important;
+    }
+
+    /* Sidebar Links */
+    .nav-link {
+      color: #bbb;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(204, 0, 0, 0.2);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background-color: #cc0000;
+      color: #fff;
+    }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      color: #cc0000;
+    }
+
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 6px;
+      background-color: #2a2a2a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
     }
 
     .card-header {
-      font-weight: 500;
-      font-size: 1rem;
+      background-color: #cc0000;
       color: #fff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      background-color: #1c1c1c;
+      color: #ddd;
+    }
+
+    .card-body h5 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ccc;
     }
 
     .card-body code {
@@ -47,70 +116,77 @@
       border-radius: 6px;
     }
 
-    .card-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
+    /* Alerts */
+    .alert-dark {
+      background-color: #2a2a2a;
+      color: #fff;
+      border-left: 4px solid #cc0000;
+      border-radius: 6px;
+      padding: 1rem;
     }
 
-    .sb-sidenav-footer {
-      font-size: 0.85rem;
-    }
-
-    .text-glow {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-    }
-
-    .icon-glow {
-      filter: drop-shadow(0 0 4px #00fff7a4);
-    }
-
+    /* Breadcrumb */
     .breadcrumb {
       background: transparent;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
     }
 
+    .breadcrumb-item.active {
+      color: #ff4d4d;
+    }
+
+    /* Footer */
     footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background-color: #121212;
+      color: #aaa;
+      padding: 1rem 0;
     }
 
-    a {
-      color: #88f1ff;
+    /* Form Elements */
+    .btn-primary {
+      background-color: #cc0000;
+      border-color: #cc0000;
     }
 
-    a:hover {
-      color: #b9f9ff;
-      text-decoration: underline;
+    .btn-primary:hover {
+      background-color: #e60000;
+      border-color: #e60000;
     }
 
+    .btn-outline-danger {
+      color: #cc0000;
+      border-color: #cc0000;
+    }
+
+    .btn-outline-danger:hover {
+      background-color: #cc0000;
+      color: white;
+    }
+
+    /* Upload Area */
     .upload-area {
       border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      padding: 3rem;
+      border-radius: 6px;
+      padding: 2rem;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
+      background-color: rgba(255, 255, 255, 0.05);
     }
 
     .upload-area:hover {
-      border-color: rgba(0, 255, 255, 0.5);
-      background: rgba(0, 255, 255, 0.05);
+      border-color: #cc0000;
+      background: rgba(204, 0, 0, 0.1);
     }
 
+    /* Protocol Badges */
     .protocol-badge {
       font-size: 0.75rem;
       padding: 0.35em 0.65em;
       margin-right: 0.5em;
       margin-bottom: 0.5em;
-    }
-
-    .packet-row {
-      border-left: 4px solid transparent;
-      transition: all 0.2s;
-    }
-
-    .packet-row:hover {
-      background: rgba(0, 255, 255, 0.05);
-      border-left-color: #00ffff;
     }
 
     .tcp-badge { background-color: #4e79a7; }
@@ -119,12 +195,41 @@
     .http-badge { background-color: #76b7b2; }
     .dns-badge { background-color: #59a14f; }
     .other-badge { background-color: #edc948; }
+
+    /* Packet Rows */
+    .packet-row {
+      border-left: 4px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .packet-row:hover {
+      background: rgba(204, 0, 0, 0.1);
+      border-left-color: #cc0000;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(204, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(204, 0, 0, 0.5);
+    }
   </style>
 </head>
 
 <body class="sb-nav-fixed">
   <!-- Top Nav -->
-  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+  <nav class="sb-topnav navbar navbar-expand navbar-dark px-4">
     <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
     <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
   </nav>
@@ -138,22 +243,49 @@
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
             <a class="nav-link" href="/">
-              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
-
-            <a class="nav-link active" href="/pcap-scan" style="color:cyan;">
-              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow" style="color:cyan;"></i></div>
+            <div class="sb-sidenav-menu-heading">Tools</div>
+            <a class="nav-link active" href="/pcap-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:#d63333;"></i></div>
               PCAP Analysis
             </a>
-
+            <a class="nav-link" href="/scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
+              File Scanner
+            </a>
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:#d63333;"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:#d63333;"></i></div>
+              CFG Analysis
+            </a>
+            <a class="nav-link" href="/install">
+              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:#d63333;"></i></div>
+              Install ClamAV
+            </a>
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:#d63333;"></i></div>
+              Freshclam
+            </a>
+            <a class="nav-link" href="/pepper-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-file-code" style="color:#d63333;"></i></div>
+              Pepper
+            </a>
+            <a class="nav-link" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:#d63333;"></i></div>
+              About
+            </a>
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
-            <a class="nav-link" href="/logout">
-              <div class="sb-nav-link-icon"><i class="fas  fa-sign-out  icon-glow"></i></div>
-              Logout
-            </a>
+          <a class="nav-link" href="/logout">
+            <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+            Logout
+          </a>
         </div>
       </nav>
     </div>
@@ -162,7 +294,7 @@
     <div id="layoutSidenav_content">
       <main class="p-4">
         <div class="d-flex justify-content-between align-items-center">
-          <h1 class="mb-3">Network Packet Analysis</h1>
+          <h1 class="mb-3 text-glow" style="color: #000000;">Network Packet Analysis</h1>
           <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
         </div>
 
@@ -175,7 +307,8 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+              <div class="alert alert-{{ 'danger' if category == 'error' else 'dark' }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
@@ -186,18 +319,18 @@
         <div class="row">
           <div class="col-lg-10">
             <div class="card text-white mb-4">
-              <div class="alert alert-dark mb-3">
-                <i class="fas fa-upload icon-glow me-2"></i> Upload PCAP File
+              <div class="card-header">
+                <i class="fas fa-upload me-2"></i> Upload PCAP File
               </div>
               <div class="card-body">
                 <form method="POST" action="/upload-pcap-file" enctype="multipart/form-data">
                   <div id="uploadArea" class="upload-area mb-4">
-                    <i class="fas fa-cloud-upload-alt fa-3x mb-3 icon-glow"></i>
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
                     <h5>Drag & Drop PCAP files here</h5>
                     <p class="text-muted">or click to browse</p>
                     <input type="file" id="pcapfile" name="pcapfile" class="d-none" accept=".pcap,.pcapng" />
                     <div class="mt-3">
-                      <button type="button" class="btn btn-outline-info" onclick="document.getElementById('pcapfile').click()">
+                      <button type="button" class="btn btn-outline-light" onclick="document.getElementById('pcapfile').click()">
                         Select PCAP File
                       </button>
                     </div>
@@ -223,63 +356,48 @@
             </div>
           </div>
 
-<div class="col-lg-12">
-  <div class="card text-white">
-    <div class="alert alert-dark mb-3">
-      <i class="fas fa-info-circle icon-glow me-2"></i> PCAP Analysis
-    </div>
-    <div class="card-body">
-      <h6>What is a PCAP File?</h6>
-      <p class="small">
-        A <strong>Packet Capture (PCAP)</strong> file contains raw network traffic data recorded over a period of time.
-        These files are generated by tools like <em>Wireshark</em>, <em>Tcpdump</em>, or intrusion detection systems.
-        They store detailed information about each network packet — including timestamps, source/destination IP addresses,
-        ports, protocols, and payload data.
-      </p>
-      <p class="small">
-        In <strong>cybersecurity</strong>, PCAP files are essential for:
-        <ul class="small">
-          <li>Investigating <strong>security incidents</strong> such as intrusions or data exfiltration</li>
-          <li>Detecting <strong>malware communications</strong> and Command & Control (C2) traffic</li>
-          <li>Analyzing <strong>network performance</strong> and troubleshooting connectivity issues</li>
-          <li>Applying <strong>YARA</strong> or <strong>Snort</strong> rules for pattern-based threat detection</li>
-        </ul>
-      </p>
+          <div class="col-lg-10">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i> PCAP Analysis
+              </div>
+              <div class="card-body">
+                <h6>What is a PCAP File?</h6>
+                <p class="small">
+                  A <strong>Packet Capture (PCAP)</strong> file contains raw network traffic data recorded over a period of time.
+                  These files are generated by tools like <em>Wireshark</em>, <em>Tcpdump</em>, or intrusion detection systems.
+                </p>
+                
+                <hr>
 
-      <hr>
+                <h6>In Cybersecurity:</h6>
+                <ul class="small">
+                  <li>Investigating <strong>security incidents</strong></li>
+                  <li>Detecting <strong>malware communications</strong></li>
+                  <li>Analyzing <strong>network performance</strong></li>
+                  <li>Applying <strong>threat detection</strong> rules</li>
+                </ul>
 
-      <h6>Supported Features:</h6>
-      <ul class="small">
-        <li>Protocol identification (TCP, UDP, ICMP)</li>
-        <li>HTTP request/response analysis</li>
-        <li>DNS query inspection</li>
-        <li>Packet timeline visualization</li>
-        <li>Malicious pattern detection via security rules</li>
-      </ul>
+                <hr>
 
-      <hr>
+                <h6>Supported Features:</h6>
+                <ul class="small">
+                  <li>Protocol identification (TCP, UDP, ICMP)</li>
+                  <li>HTTP request/response analysis</li>
+                  <li>DNS query inspection</li>
+                  <li>Malicious pattern detection</li>
+                </ul>
 
-      <h6>Where PCAP Files are Used:</h6>
-      <ul class="small">
-        <li><strong>Digital Forensics:</strong> Reconstructing attack timelines</li>
-        <li><strong>Threat Hunting:</strong> Identifying suspicious network behavior</li>
-        <li><strong>Incident Response:</strong> Analyzing post-breach evidence</li>
-        <li><strong>Research & Development:</strong> Testing intrusion detection rules</li>
-        <li><strong>Compliance Audits:</strong> Verifying security policy adherence</li>
-      </ul>
+                <hr>
 
-      <hr>
-
-      <h6>File Requirements:</h6>
-      <ul class="small">
-        <li>Formats: <code>.pcap</code>, <code>.pcapng</code></li>
-        <li>Max size: 100MB</li>
-        <li>Ensure the file is captured in <strong>promiscuous mode</strong> for complete visibility</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
+                <h6>File Requirements:</h6>
+                <ul class="small">
+                  <li>Formats: <code>.pcap</code>, <code>.pcapng</code></li>
+                  <li>Max size: 100MB</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -334,7 +452,7 @@
       // Drag and drop functionality
       uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
-        uploadArea.style.borderColor = '#00ffff';
+        uploadArea.style.borderColor = '#cc0000';
       });
 
       uploadArea.addEventListener('dragleave', () => {

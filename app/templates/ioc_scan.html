@@ -12,20 +12,169 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <!-- Custom Vision Pro Aesthetic -->
+  <!-- Red and Black Aesthetic -->
   <style>
     body {
-      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
+      background-color: #fffefe;
+      font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #000000;
+      padding: 40px 0;
+      min-height: 100vh;
     }
 
+    h1, h2, h3, h4, h5 {
+      font-weight: 700;
+      color: #000;
+    }
+
+    h1 {
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Navbar */
+    .navbar, .sb-sidenav {
+      background-color: #121212 !important;
+      border-bottom: 2px solid #cc0000;
+    }
+
+    .navbar-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff !important;
+    }
+
+    .navbar-brand:hover {
+      color: #ff4d4d !important;
+    }
+
+    /* Sidebar Links */
+    .nav-link {
+      color: #bbb;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(204, 0, 0, 0.2);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background-color: #cc0000;
+      color: #fff;
+    }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      color: #cc0000;
+    }
+
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 6px;
+      background-color: #2a2a2a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    .card-header {
+      background-color: #cc0000;
+      color: #fff;
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      background-color: #1c1c1c;
+      color: #ddd;
+    }
+
+    .card-body h5 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ccc;
+    }
+
+    .card-body code {
+      color: #66d9ef;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+    }
+
+    /* Alerts */
+    .alert-dark {
+      background-color: #2a2a2a;
+      color: #fff;
+      border-left: 4px solid #cc0000;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      background: transparent;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-item.active {
+      color: #ff4d4d;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background-color: #121212;
+      color: #aaa;
+      padding: 1rem 0;
+    }
+
+    /* Form Elements */
+    .form-control {
+      background-color: #333;
+      border: 1px solid #444;
+      color: #fff;
+    }
+
+    .form-control:focus {
+      background-color: #444;
+      border-color: #cc0000;
+      color: #fff;
+      box-shadow: 0 0 0 0.25rem rgba(204, 0, 0, 0.25);
+    }
+
+    .btn-primary {
+      background-color: #cc0000;
+      border-color: #cc0000;
+    }
+
+    .btn-primary:hover {
+      background-color: #e60000;
+      border-color: #e60000;
+    }
+
+    /* Scan Results */
     .scan-result {
-      border-left: 3px solid #00ffff;
+      border-left: 3px solid #cc0000;
       padding-left: 15px;
       margin-bottom: 15px;
-      background: rgba(0, 255, 255, 0.05);
+      background: rgba(204, 0, 0, 0.1);
       border-radius: 0 8px 8px 0;
     }
 
@@ -65,23 +214,29 @@
       border-left: 3px solid #ff0077;
     }
 
-    #scanResults {
+    #scanResults, #uploadResults {
       max-height: 500px;
       overflow-y: auto;
       padding-right: 10px;
+      background-color: #1c1c1c;
+      border-radius: 6px;
+      padding: 1rem;
     }
 
-    #scanResults::-webkit-scrollbar {
+    #scanResults::-webkit-scrollbar,
+    #uploadResults::-webkit-scrollbar {
       width: 8px;
     }
 
-    #scanResults::-webkit-scrollbar-track {
+    #scanResults::-webkit-scrollbar-track,
+    #uploadResults::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.05);
       border-radius: 10px;
     }
 
-    #scanResults::-webkit-scrollbar-thumb {
-      background: rgba(0, 255, 255, 0.3);
+    #scanResults::-webkit-scrollbar-thumb,
+    #uploadResults::-webkit-scrollbar-thumb {
+      background: rgba(204, 0, 0, 0.3);
       border-radius: 10px;
     }
 
@@ -105,20 +260,23 @@
       word-break: break-all;
     }
 
-    .navbar, .sb-sidenav, .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Progress Bar */
+    .progress {
+      background-color: #333;
+      height: 6px;
+      border-radius: 3px;
+    }
+
+    .progress-bar {
+      background-color: #cc0000;
+      box-shadow: 0 0 5px rgba(204, 0, 0, 0.7);
     }
   </style>
 </head>
 
 <body class="sb-nav-fixed">
-
   <!-- Top Nav -->
-  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+  <nav class="sb-topnav navbar navbar-expand navbar-dark px-4">
     <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
     <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
   </nav>
@@ -131,24 +289,50 @@
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link active" href="/">
-              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
-            <a class="nav-link" href="/ioc-scan" style="color:cyan;">
-              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow" style="color:cyan;"></i></div>
+            <div class="sb-sidenav-menu-heading">Tools</div>
+            <a class="nav-link active" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:#d63333;"></i></div>
               IOC Scan
             </a>
-            <a class="nav-link" href="/cfg-analysis" style="color:cyan;">
-              <div class="sb-nav-link-icon"><i class="fas fa-network-wired icon-glow" style="color:cyan;"></i></div>
-              CFG analyzing
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:#d63333;"></i></div>
+              CFG Analysis
             </a>
-            
+            <a class="nav-link" href="/scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
+              File Scanner
+            </a>
+            <a class="nav-link" href="/install">
+              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:#d63333;"></i></div>
+              Install ClamAV
+            </a>
+            <a class="nav-link" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:#d63333;"></i></div>
+              Freshclam
+            </a>
+            <a class="nav-link" href="/pcap-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:#d63333;"></i></div>
+              PCAP Scan
+            </a>
+            <a class="nav-link" href="/pepper-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-file-code" style="color:#d63333;"></i></div>
+              Pepper
+            </a>
+            <a class="nav-link" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:#d63333;"></i></div>
+              About
+            </a>
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
-          <div class="small">System Status:</div>
-          <span class="text-success">●</span> Operational
+          <a class="nav-link" href="/logout">
+            <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+            Logout
+          </a>
         </div>
       </nav>
     </div>
@@ -157,7 +341,7 @@
     <div id="layoutSidenav_content">
       <main class="p-4">
         <div class="d-flex justify-content-between align-items-center">
-          <h1 class="mb-3 text-glow">Enterprise IOC Scanner</h1>
+          <h1 class="mb-3 text-glow" style="color: #000000;">Enterprise IOC Scanner</h1>
           <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
         </div>
 
@@ -166,19 +350,69 @@
           <li class="breadcrumb-item active">IOC Scanner</li>
         </ol>
 
+        <!-- Info Cards Row -->
+        <div class="row mb-4">
+          <!-- IOC Scanner Info Card -->
+          <div class="col-lg-6 mb-4">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fas fa-search me-2"></i> About IOC Scanning
+              </div>
+              <div class="card-body">
+                <h5>Indicator of Compromise Analysis</h5>
+                <p>The IOC Scanner detects known malicious patterns in files including:</p>
+                <ul>
+                  <li>Malware signatures and hashes</li>
+                  <li>Suspicious IP addresses and domains</li>
+                  <li>Malicious file characteristics</li>
+                  <li>YARA rule matches</li>
+                </ul>
+                <div class="alert alert-dark">
+                  <i class="fas fa-info-circle me-2"></i>
+                  Supports: EXE, DLL, PDF, DOCX and 100+ other file types
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CFG Analysis Info Card -->
+          <div class="col-lg-6 mb-4">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fas fa-project-diagram me-2"></i> About CFG Analysis
+              </div>
+              <div class="card-body">
+                <h5>Control Flow Graph Deobfuscation</h5>
+                <p>Advanced analysis of executable files to detect and analyze:</p>
+                <ul>
+                  <li>Obfuscated control flow patterns</li>
+                  <li>Dispatcher-based execution flow</li>
+                  <li>Dynamic jump targets</li>
+                  <li>Anti-analysis techniques</li>
+                </ul>
+                <div class="alert alert-dark">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Currently supports: Windows PE files (EXE/DLL)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanner Sections -->
         <div class="row">
           <!-- File Upload Section -->
-          <div class="col-lg-6 mb-4 ">
+          <div class="col-lg-6 mb-4">
             <div class="card text-white">
-              <div class="alert alert-dark mb-3">
-                <i class="fas fa-upload icon-glow me-2"></i> File Analysis
+              <div class="card-header">
+                <i class="fas fa-upload me-2"></i> File Analysis
               </div>
               <div class="card-body">
                 <form id="uploadForm" enctype="multipart/form-data">
                   <div class="mb-3">
                     <label for="iocFile" class="form-label">Upload file for advanced IOC scanning</label>
-                    <input class="form-control bg-dark " type="file" id="iocFile" name="file" required>
-                    <div class="form-text">Max file size: 100MB. Supported formats: EXE, DLL, PDF, DOCX, etc.</div>
+                    <input class="form-control" type="file" id="iocFile" name="file" required>
+                    <div class="form-text text-muted">Max file size: 100MB. Supported formats: EXE, DLL, PDF, DOCX, etc.</div>
                   </div>
                   <button type="submit" class="btn btn-primary">
                     <i class="fas fa-search me-2"></i> Scan File
@@ -187,9 +421,9 @@
               </div>
             </div>
             
-            <div class="card mt-4 d-none" id="uploadResultsCard" style="color:white;">
-               <div class="alert alert-dark mb-3">
-                <i class="fas fa-file-alt icon-glow me-2"></i> Scan Results
+            <div class="card mt-4 d-none" id="uploadResultsCard">
+              <div class="card-header">
+                <i class="fas fa-file-alt me-2"></i> Scan Results
               </div>
               <div class="card-body" id="uploadResults">
                 <!-- Results will be populated here -->
@@ -197,90 +431,35 @@
             </div>
           </div>
 
-                    <div class="col-lg-6 mb-4 ">
+          <!-- CFG Analysis Section -->
+          <div class="col-lg-6 mb-4">
             <div class="card text-white">
-              <div class="alert alert-dark mb-3">
-                <i class="fas fa-upload icon-glow me-2"></i> CFG Analysis
+              <div class="card-header">
+                <i class="fas fa-project-diagram me-2"></i> CFG Analysis
               </div>
               <div class="card-body">
-                <form id="uploadForm" enctype="multipart/form-data" action="analyze-cfg" method="post">
+                <form id="cfgForm" enctype="multipart/form-data" action="analyze-cfg" method="post">
                   <div class="mb-3">
-                    <label for="iocFile" class="form-label">Upload file for CFG Analyzing</label>
-                    <input class="form-control bg-dark " type="file" id="iocFile" name="file" required>
-                    <div class="form-text">Supported formats: EXE</div>
+                    <label for="cfgFile" class="form-label">Upload file for CFG Analyzing</label>
+                    <input class="form-control" type="file" id="cfgFile" name="file" required>
+                    <div class="form-text text-muted">Supported formats: EXE</div>
                   </div>
                   <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search me-2"></i> Scan File
+                    <i class="fas fa-search me-2"></i> Analyze File
                   </button>
                 </form>
               </div>
             </div>
             
-            <div class="card mt-4 d-none" id="uploadResultsCard" style="color:white;">
+            <div class="card mt-4 d-none" id="cfgResultsCard">
               <div class="card-header">
-                <i class="fas fa-file-alt icon-glow me-2"></i> Scan Results
+                <i class="fas fa-file-alt me-2"></i> Analysis Results
               </div>
-              <div class="card-body" id="uploadResults">
+              <div class="card-body" id="cfgResults">
                 <!-- Results will be populated here -->
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="row">
-<!-- Add this right after the breadcrumb section, before the file upload sections -->
-<div class="row mb-4">
-  <!-- IOC Scanner Info Card -->
-  <div class="col-lg-6 mb-4">
-    <div class="card text-white bg-dark">
-      <div class="card-header bg-primary">
-        <i class="fas fa-search me-2"></i> About IOC Scanning
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">Indicator of Compromise Analysis</h5>
-        <p class="card-text">
-          The IOC Scanner detects known malicious patterns in files including:
-        </p>
-        <ul>
-          <li>Malware signatures and hashes</li>
-          <li>Suspicious IP addresses and domains</li>
-          <li>Malicious file characteristics</li>
-          <li>YARA rule matches</li>
-        </ul>
-        <div class="alert alert-info mb-0">
-          <i class="fas fa-info-circle me-2"></i>
-          Supports: EXE, DLL, PDF, DOCX and 100+ other file types
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CFG Analysis Info Card -->
-  <div class="col-lg-6 mb-4">
-    <div class="card text-white bg-dark">
-      <div class="card-header bg-info">
-        <i class="fas fa-project-diagram me-2"></i> About CFG Analysis
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">Control Flow Graph Deobfuscation</h5>
-        <p class="card-text">
-          Advanced analysis of executable files to detect and analyze:
-        </p>
-        <ul>
-          <li>Obfuscated control flow patterns</li>
-          <li>Dispatcher-based execution flow</li>
-          <li>Dynamic jump targets</li>
-          <li>Anti-analysis techniques</li>
-        </ul>
-        <div class="alert alert-warning mb-0">
-          <i class="fas fa-exclamation-triangle me-2"></i>
-          Currently supports: Windows PE files (EXE/DLL)
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
         </div>
       </main>
 
@@ -338,7 +517,7 @@
         },
         error: function(xhr) {
           $('#uploadResults').html(`
-            <div class="alert alert-danger">
+            <div class="alert alert-dark">
               <i class="fas fa-exclamation-triangle me-2"></i>
               ${xhr.responseJSON ? xhr.responseJSON.message : 'File analysis failed'}
             </div>
@@ -348,33 +527,42 @@
       });
     });
     
-    // Handle scan form
-    $('#scanForm').submit(function(e) {
+    // Handle CFG form submission
+    $('#cfgForm').submit(function(e) {
       e.preventDefault();
-      var path = $('#scanPath').val();
-      var isRemote = path.includes('@') || path.includes(':');
+      var formData = new FormData(this);
       
-      // Clear previous results
-      $('#scanResults').html('');
-      $('.progress-bar').css('width', '0%').removeClass('bg-success bg-danger');
+      // Show loading state
+      $('#cfgResultsCard').addClass('d-none');
+      $('#cfgResults').html(`
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Analyzing control flow graph...</p>
+        </div>
+      `);
       
-      if (isRemote) {
-        var parts = path.split('@');
-        var user = parts[0];
-        var hostPath = parts[1].split(':');
-        var host = hostPath[0];
-        var remotePath = hostPath[1];
-        
-        startRemoteScan(host, user, $('#remotePass').val(), remotePath);
-      } else {
-        startLocalScan(path);
-      }
-    });
-    
-    // Toggle remote credentials
-    $('#scanPath').on('input', function() {
-      var isRemote = $(this).val().includes('@') || $(this).val().includes(':');
-      $('.remote-credentials').toggle(isRemote);
+      $.ajax({
+        url: '/analyze-cfg',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          displayCfgResults(response.results);
+          $('#cfgResultsCard').removeClass('d-none');
+        },
+        error: function(xhr) {
+          $('#cfgResults').html(`
+            <div class="alert alert-dark">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              ${xhr.responseJSON ? xhr.responseJSON.message : 'CFG analysis failed'}
+            </div>
+          `);
+          $('#cfgResultsCard').removeClass('d-none');
+        }
+      });
     });
     
     // Update database stats
@@ -385,20 +573,6 @@
       $('#domainCount').text('387');
       $('#ipCount').text('156');
     }
-    
-    // Database management buttons
-    $('#updateRulesBtn').click(function() {
-      alert('YARA rules update functionality would be implemented here');
-      // In real implementation: $.post('/update-yara-rules', ...)
-    });
-    
-    $('#importIocBtn').click(function() {
-      alert('IOC import functionality would be implemented here');
-    });
-    
-    $('#exportResultsBtn').click(function() {
-      alert('Results export functionality would be implemented here');
-    });
   });
   
   function displayUploadResults(results) {
@@ -476,7 +650,7 @@
     
     if ((!results.ioc_matches || results.ioc_matches.length === 0) && 
         (!results.yara_matches || results.yara_matches.length === 0)) {
-      html += `<div class="alert alert-success">
+      html += `<div class="alert alert-dark">
         <i class="fas fa-check-circle me-2"></i>
         No IOCs or malicious patterns detected in this file.
       </div>`;
@@ -484,6 +658,66 @@
     
     html += '</div>';
     $('#uploadResults').html(html);
+  }
+  
+  function displayCfgResults(results) {
+    var html = '<div class="scan-result">';
+    
+    html += `<div class="d-flex justify-content-between align-items-center mb-3">
+      <h4><i class="fas fa-project-diagram me-2"></i> ${results.filename}</h4>
+      <span class="badge bg-${results.complexity > 7 ? 'danger' : results.complexity > 4 ? 'warning' : 'success'}">
+        Complexity: ${results.complexity}/10
+      </span>
+    </div>`;
+    
+    // Basic file info
+    html += `<h5><i class="fas fa-info-circle me-2"></i>File Information</h5>
+    <table class="file-info-table mb-4">
+      <tr><td><strong>File Type:</strong></td><td>${results.file_type}</td></tr>
+      <tr><td><strong>Size:</strong></td><td>${formatFileSize(results.size)}</td></tr>
+      <tr><td><strong>Architecture:</strong></td><td>${results.architecture}</td></tr>
+      <tr><td><strong>Entry Point:</strong></td><td><code>${results.entry_point}</code></td></tr>
+      <tr><td><strong>Sections:</strong></td><td>${results.sections.length}</td></tr>
+    </table>`;
+    
+    // CFG Analysis results
+    html += `<h5 class="mt-4"><i class="fas fa-chart-network me-2"></i>Control Flow Analysis</h5>`;
+    
+    if (results.obfuscation_techniques && results.obfuscation_techniques.length > 0) {
+      html += `<div class="alert alert-dark">
+        <h6><i class="fas fa-exclamation-triangle me-2"></i>Obfuscation Techniques Detected</h6>
+        <ul class="mb-0">`;
+      
+      results.obfuscation_techniques.forEach(function(tech) {
+        html += `<li>${tech.name} (${tech.severity}) - ${tech.description}</li>`;
+      });
+      
+      html += `</ul></div>`;
+    } else {
+      html += `<div class="alert alert-dark">
+        <i class="fas fa-check-circle me-2"></i>
+        No significant obfuscation techniques detected
+      </div>`;
+    }
+    
+    // Suspicious patterns
+    if (results.suspicious_patterns && results.suspicious_patterns.length > 0) {
+      html += `<h5 class="mt-4"><i class="fas fa-search me-2"></i>Suspicious Patterns</h5>
+      <div class="alert alert-dark">`;
+      
+      results.suspicious_patterns.forEach(function(pattern) {
+        html += `<div class="mb-2">
+          <strong>${pattern.type}</strong>
+          <div class="small">${pattern.description}</div>
+          <div class="small text-monospace">${pattern.example}</div>
+        </div>`;
+      });
+      
+      html += `</div>`;
+    }
+    
+    html += '</div>';
+    $('#cfgResults').html(html);
   }
   
   function getThreatLevelColor(level) {
@@ -502,80 +736,6 @@
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-  
-  function startLocalScan(path) {
-    var eventSource = new EventSource('/perform-ioc-scan?path=' + encodeURIComponent(path));
-    var progressBar = $('.progress-bar');
-    
-    eventSource.onmessage = function(e) {
-      if (e.data === 'COMPLETED') {
-        progressBar.addClass('bg-success').removeClass('progress-bar-animated');
-        eventSource.close();
-        return;
-      }
-      
-      if (e.data.startsWith('data: PROGRESS:')) {
-        var progress = e.data.split(':')[2];
-        progressBar.css('width', progress + '%').text(progress + '%');
-        return;
-      }
-      
-      var resultsDiv = $('#scanResults');
-      var message = e.data.replace('data: ', '');
-      
-      if (message.includes('⚠️')) {
-        resultsDiv.append('<div class="text-warning">' + message + '</div>');
-      } else if (message.includes('❌')) {
-        resultsDiv.append('<div class="text-danger">' + message + '</div>');
-      } else {
-        resultsDiv.append('<div>' + message + '</div>');
-      }
-      
-      resultsDiv.scrollTop(resultsDiv[0].scrollHeight);
-    };
-    
-    eventSource.onerror = function() {
-      progressBar.addClass('bg-danger').removeClass('progress-bar-animated');
-      eventSource.close();
-    };
-  }
-  
-  function startRemoteScan(host, username, password, path) {
-    var eventSource = new EventSource(`/perform-ioc-scan?path=${encodeURIComponent(path)}&remote_host=${encodeURIComponent(host)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
-    var progressBar = $('.progress-bar');
-    
-    eventSource.onmessage = function(e) {
-      if (e.data.startsWith('data: PROGRESS:')) {
-        var progress = e.data.split(':')[2];
-        progressBar.css('width', progress + '%').text(progress + '%');
-        return;
-      }
-      
-      if (e.data === 'COMPLETED') {
-        progressBar.addClass('bg-success').removeClass('progress-bar-animated');
-        eventSource.close();
-        return;
-      }
-      
-      var resultsDiv = $('#scanResults');
-      var message = e.data.replace('data: ', '');
-      
-      if (message.includes('⚠️')) {
-        resultsDiv.append('<div class="text-warning">' + message + '</div>');
-      } else if (message.includes('❌')) {
-        resultsDiv.append('<div class="text-danger">' + message + '</div>');
-      } else {
-        resultsDiv.append('<div>' + message + '</div>');
-      }
-      
-      resultsDiv.scrollTop(resultsDiv[0].scrollHeight);
-    };
-    
-    eventSource.onerror = function() {
-      progressBar.addClass('bg-danger').removeClass('progress-bar-animated');
-      eventSource.close();
-    };
   }
   </script>
 </body>

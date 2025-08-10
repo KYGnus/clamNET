@@ -11,33 +11,102 @@
   <link href="../static/css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <!-- Custom Vision Pro Aesthetic -->
+  <!-- Red and Black Aesthetic -->
   <style>
     body {
-      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
+      background-color: #fffefe;
+      font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #000000;
+      padding: 40px 0;
+      min-height: 100vh;
     }
 
-    h1, h2, h5 {
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    h1, h2, h3, h4, h5 {
+      font-weight: 700;
+      color: #000;
     }
 
-    .navbar, .sb-sidenav, .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    h1 {
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Navbar */
+    .navbar, .sb-sidenav {
+      background-color: #121212 !important;
+      border-bottom: 2px solid #cc0000;
+    }
+
+    .navbar-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff !important;
+    }
+
+    .navbar-brand:hover {
+      color: #ff4d4d !important;
+    }
+
+    /* Sidebar Links */
+    .nav-link {
+      color: #bbb;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(204, 0, 0, 0.2);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background-color: #cc0000;
+      color: #fff;
+    }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      color: #cc0000;
+    }
+
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 6px;
+      background-color: #2a2a2a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
     }
 
     .card-header {
-      font-weight: 500;
-      font-size: 1rem;
+      background-color: #cc0000;
       color: #fff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      background-color: #1c1c1c;
+      color: #ddd;
+    }
+
+    .card-body h5 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ccc;
     }
 
     .card-body code {
@@ -48,46 +117,75 @@
     }
 
     .card-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-    }
-
-    .sb-sidenav-footer {
+      background: #1c1c1c;
+      border-top: 1px solid rgba(255,255,255,0.08);
       font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+      color: #999;
+      border-radius: 0 0 6px 6px;
     }
 
-    .text-glow {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    /* Alerts */
+    .alert-dark {
+      background-color: #2a2a2a;
+      color: #fff;
+      border-left: 4px solid #cc0000;
+      border-radius: 6px;
+      padding: 1rem;
     }
 
-    .icon-glow {
-      filter: drop-shadow(0 0 4px #00fff7a4);
-    }
-
+    /* Breadcrumb */
     .breadcrumb {
       background: transparent;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
     }
 
+    .breadcrumb-item.active {
+      color: #ff4d4d;
+    }
+
+    /* Footer */
     footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background-color: #121212;
+      color: #aaa;
+      padding: 1rem 0;
     }
 
-    a {
-      color: #88f1ff;
+    /* Form Elements */
+    .form-control {
+      background-color: #333;
+      border: 1px solid #444;
+      color: #fff;
     }
 
-    a:hover {
-      color: #b9f9ff;
-      text-decoration: underline;
+    .form-control:focus {
+      background-color: #444;
+      border-color: #cc0000;
+      color: #fff;
+      box-shadow: 0 0 0 0.25rem rgba(204, 0, 0, 0.25);
     }
 
+    .btn-primary {
+      background-color: #cc0000;
+      border-color: #cc0000;
+    }
+
+    .btn-primary:hover {
+      background-color: #e60000;
+      border-color: #e60000;
+    }
+
+    /* Update Results */
     #updateResults {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-      padding: 15px;
       font-family: monospace;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background-color: #1c1c1c;
+      color: #00ff7f;
+      border-radius: 6px;
+      padding: 1rem;
+      height: 400px;
+      overflow-y: auto;
     }
 
     #updateResults p {
@@ -95,17 +193,23 @@
       line-height: 1.4;
     }
 
+    /* Progress Bar */
+    .progress {
+      background-color: #333;
+      height: 6px;
+      border-radius: 3px;
+    }
+
     .progress-bar {
-      background-color: #00fff7;
-      box-shadow: 0 0 10px #00fff7a4;
+      background-color: #cc0000;
+      box-shadow: 0 0 5px rgba(204, 0, 0, 0.7);
     }
   </style>
 </head>
 
 <body class="sb-nav-fixed">
-
   <!-- Top Nav -->
-  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
+  <nav class="sb-topnav navbar navbar-expand navbar-dark px-4">
     <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
     <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
   </nav>
@@ -118,30 +222,50 @@
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link active" href="/">
-              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
-
+            <div class="sb-sidenav-menu-heading">Tools</div>
             <a class="nav-link" href="/scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
               File Scanner
             </a>
             <a class="nav-link" href="/install">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:#d63333;"></i></div>
               Install ClamAV
             </a>
-            <a class="nav-link" href="/update" style="color:cyan;">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow" style="color:cyan;"></i></div>
+            <a class="nav-link active" href="/update">
+              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:#d63333;"></i></div>
               Freshclam
             </a>
-
-            
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:#d63333;"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:#d63333;"></i></div>
+              CFG Analysis
+            </a>
+            <a class="nav-link" href="/pcap-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:#d63333;"></i></div>
+              PCAP Scan
+            </a>
+            <a class="nav-link" href="/pepper-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-file-code" style="color:#d63333;"></i></div>
+              Pepper
+            </a>
+            <a class="nav-link" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:#d63333;"></i></div>
+              About
+            </a>
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
-          <div class="small">System Status:</div>
-          <span class="text-success">●</span> Operational
+            <a class="nav-link" href="/logout">
+              <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+              Logout
+            </a>
         </div>
       </nav>
     </div>
@@ -150,41 +274,43 @@
     <div id="layoutSidenav_content">
       <main class="p-4">
         <div class="d-flex justify-content-between align-items-center">
-          <h1 class="mb-3 text-glow">clamNET</h1>
+          <h1 class="mb-3 text-glow" style="color: #000000;">Update Databases</h1>
           <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
         </div>
 
         <ol class="breadcrumb mb-4">
           <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-          <li class="breadcrumb-item active">Update Databases</li>
+          <li class="breadcrumb-item active">Freshclam</li>
         </ol>
 
         <!-- Update Form -->
         <div class="row">
           <div class="col-12">
-            
             <div class="card text-white mb-4">
-              <div class="alert alert-dark mb-3">
-                <i class="fas fa-sync-alt me-2 icon-glow"></i> Update Virus Databases
+              <div class="card-header">
+                <i class="fas fa-sync-alt me-1"></i> Update Virus Databases
               </div>
               <div class="card-body">
                 <form id="updateForm">
                   <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                       <label for="update_hosts" class="form-label">Host IP Addresses</label>
-                      <input type="text" class="form-control bg-dark text-white border-secondary" 
-                             id="update_hosts" placeholder="192.168.1.10, 192.168.1.11">
-                      <div class="form-text">Comma separated list of IP addresses</div>
+                      <input type="text" class="form-control" 
+                             id="update_hosts" name="update_hosts" 
+                             placeholder="192.168.1.10, 192.168.1.11" required>
+                      <div class="form-text text-muted">Comma separated list of IP addresses</div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 mb-3">
                       <label for="update_user" class="form-label">Username</label>
-                      <input type="text" class="form-control bg-dark text-white border-secondary" 
-                             id="update_user" placeholder="admin">
+                      <input type="text" class="form-control" 
+                             id="update_user" name="update_user" 
+                             placeholder="admin" required>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 mb-3">
                       <label for="update_pass" class="form-label">Password</label>
-                      <input type="password" class="form-control bg-dark text-white border-secondary" 
-                             id="update_pass" placeholder="password">
+                      <input type="password" class="form-control" 
+                             id="update_pass" name="update_pass" 
+                             placeholder="password" required>
                     </div>
                   </div>
                   <div class="d-grid gap-2">
@@ -202,14 +328,14 @@
         <div class="row">
           <div class="col-12">
             <div class="card text-white">
-             <div class="alert alert-dark mb-3">
-                <i class="fas fa-terminal me-2 icon-glow"></i> Update Progress
+              <div class="card-header">
+                <i class="fas fa-terminal me-1"></i> Update Progress
               </div>
               <div class="card-body">
-                <div class="progress mb-3" style="height: 6px;">
+                <div class="progress mb-3">
                   <div id="updateProgress" class="progress-bar" role="progressbar" style="width: 0%"></div>
                 </div>
-                <div id="updateResults" style="height: 400px;"></div>
+                <div id="updateResults"></div>
               </div>
             </div>
           </div>
@@ -237,124 +363,120 @@
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
   <script src="../static/js/scripts.js"></script>
 
-  <!-- Update Script -->
+  <script>
+    document.getElementById('updateForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const hosts = document.getElementById('update_hosts').value;
+        const username = document.getElementById('update_user').value;
+        const password = document.getElementById('update_pass').value;
+        const resultsDiv = document.getElementById('updateResults');
+        const progressBar = document.getElementById('updateProgress');
+        const submitBtn = this.querySelector('button[type="submit"]');
 
+        // Reset UI
+        resultsDiv.innerHTML = '';
+        progressBar.style.width = '0%';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
 
-<script>
-document.getElementById('updateForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const hosts = document.getElementById('update_hosts').value;
-    const username = document.getElementById('update_user').value;
-    const password = document.getElementById('update_pass').value;
-    const resultsDiv = document.getElementById('updateResults');
-    const progressBar = document.getElementById('updateProgress');
-    const submitBtn = this.querySelector('button[type="submit"]');
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 3;
 
-    // Reset UI
-    resultsDiv.innerHTML = '';
-    progressBar.style.width = '0%';
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
-
-    let reconnectAttempts = 0;
-    const maxReconnectAttempts = 3;
-
-    async function startUpdate() {
-        // Send credentials via POST to get a session token
-        let sessionToken;
-        try {
-            const response = await fetch('/start-update-session', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ hosts, username, password })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error(data.message || 'Failed to start update session');
-            }
-            sessionToken = data.session_token;
-        } catch (error) {
-            resultsDiv.innerHTML += `<p style="color: #ff6b6b"><i class="fas fa-times-circle me-2"></i>Error: ${error.message}</p>`;
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Update Databases';
-            return;
-        }
-
-        // Initialize EventSource with session token
-        const eventSource = new EventSource(`/update-databases?session_token=${encodeURIComponent(sessionToken)}&t=${Date.now()}`);
-
-        eventSource.onopen = function() {
-            reconnectAttempts = 0;
-        };
-
-        eventSource.onmessage = function(e) {
-            const data = e.data.replace('data: ', '');
-            if (data === 'END') {
-                eventSource.close();
+        async function startUpdate() {
+            // Send credentials via POST to get a session token
+            let sessionToken;
+            try {
+                const response = await fetch('/start-update-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hosts, username, password })
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to start update session');
+                }
+                sessionToken = data.session_token;
+            } catch (error) {
+                resultsDiv.innerHTML += `<p style="color: #ff6b6b"><i class="fas fa-times-circle me-2"></i>Error: ${error.message}</p>`;
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Update Databases';
                 return;
             }
 
-            if (data === 'COMPLETED') {
-                progressBar.style.width = '100%';
-                return;
-            }
+            // Initialize EventSource with session token
+            const eventSource = new EventSource(`/update-databases?session_token=${encodeURIComponent(sessionToken)}&t=${Date.now()}`);
 
-            if (data.startsWith('PROGRESS:')) {
-                progressBar.style.width = `${data.split(':')[1]}%`;
-                return;
-            }
+            eventSource.onopen = function() {
+                reconnectAttempts = 0;
+            };
 
-            const p = document.createElement('p');
-            p.style.marginBottom = '5px';
-            if (data.includes('❌')) {
-                p.style.color = '#ff6b6b';
-                p.innerHTML = `<i class="fas fa-times-circle me-2"></i>${data.replace('❌', '')}`;
-            } else if (data.includes('✅')) {
-                p.style.color = '#6bff6b';
-                p.innerHTML = `<i class="fas fa-check-circle me-2"></i>${data.replace('✅', '')}`;
-            } else if (data.includes('🔄')) {
-                p.style.color = '#6bd5ff';
-                p.innerHTML = `<i class="fas fa-sync-alt me-2 ${data.includes('Connecting') ? 'fa-spin' : ''}"></i>${data.replace('🔄', '')}`;
-            } else {
-                p.textContent = data;
-            }
+            eventSource.onmessage = function(e) {
+                const data = e.data.replace('data: ', '');
+                if (data === 'END') {
+                    eventSource.close();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Update Databases';
+                    return;
+                }
 
-            resultsDiv.appendChild(p);
-            resultsDiv.scrollTop = resultsDiv.scrollHeight;
-        };
+                if (data === 'COMPLETED') {
+                    progressBar.style.width = '100%';
+                    return;
+                }
 
-        eventSource.onerror = function() {
-            if (reconnectAttempts < maxReconnectAttempts) {
-                reconnectAttempts++;
+                if (data.startsWith('PROGRESS:')) {
+                    progressBar.style.width = `${data.split(':')[1]}%`;
+                    return;
+                }
+
                 const p = document.createElement('p');
-                p.style.color = '#ffcc00';
-                p.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>Connection lost, attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})...`;
-                resultsDiv.appendChild(p);
-                setTimeout(startUpdate, 2000 * reconnectAttempts);
-            } else {
-                const p = document.createElement('p');
-                p.style.color = '#ff6b6b';
-                p.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Maximum reconnection attempts reached';
-                resultsDiv.appendChild(p);
-                eventSource.close();
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Update Databases';
-            }
-        };
-    }
+                p.style.marginBottom = '5px';
+                if (data.includes('❌')) {
+                    p.style.color = '#ff6b6b';
+                    p.innerHTML = `<i class="fas fa-times-circle me-2"></i>${data.replace('❌', '')}`;
+                } else if (data.includes('✅')) {
+                    p.style.color = '#6bff6b';
+                    p.innerHTML = `<i class="fas fa-check-circle me-2"></i>${data.replace('✅', '')}`;
+                } else if (data.includes('🔄')) {
+                    p.style.color = '#6bd5ff';
+                    p.innerHTML = `<i class="fas fa-sync-alt me-2 ${data.includes('Connecting') ? 'fa-spin' : ''}"></i>${data.replace('🔄', '')}`;
+                } else {
+                    p.textContent = data;
+                }
 
-    startUpdate();
+                resultsDiv.appendChild(p);
+                resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            };
 
-    // Handle page navigation or tab closing
-    window.addEventListener('beforeunload', function() {
-        if (eventSource) {
-            eventSource.close();
+            eventSource.onerror = function() {
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    const p = document.createElement('p');
+                    p.style.color = '#ffcc00';
+                    p.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>Connection lost, attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})...`;
+                    resultsDiv.appendChild(p);
+                    setTimeout(startUpdate, 2000 * reconnectAttempts);
+                } else {
+                    const p = document.createElement('p');
+                    p.style.color = '#ff6b6b';
+                    p.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Maximum reconnection attempts reached';
+                    resultsDiv.appendChild(p);
+                    eventSource.close();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Update Databases';
+                }
+            };
         }
+
+        startUpdate();
+
+        // Handle page navigation or tab closing
+        window.addEventListener('beforeunload', function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
     });
-});
-
   </script>
 </body>
 </html>

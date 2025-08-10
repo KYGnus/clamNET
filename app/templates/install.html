@@ -11,32 +11,102 @@
   <link href="../static/css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
+  <!-- Red and Black Aesthetic -->
   <style>
     body {
-      background: radial-gradient(ellipse at center, #0f0f0f 0%, #000000 100%);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
+      background-color: #fffefe;
+      font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #000000;
+      padding: 40px 0;
+      min-height: 100vh;
     }
 
-    h1, h2, h5 {
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    h1, h2, h3, h4, h5 {
+      font-weight: 700;
+      color: #000;
     }
 
-    .navbar, .sb-sidenav, .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    h1 {
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Navbar */
+    .navbar, .sb-sidenav {
+      background-color: #121212 !important;
+      border-bottom: 2px solid #cc0000;
+    }
+
+    .navbar-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff !important;
+    }
+
+    .navbar-brand:hover {
+      color: #ff4d4d !important;
+    }
+
+    /* Sidebar Links */
+    .nav-link {
+      color: #bbb;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(204, 0, 0, 0.2);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background-color: #cc0000;
+      color: #fff;
+    }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      color: #cc0000;
+    }
+
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 6px;
+      background-color: #2a2a2a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
     }
 
     .card-header {
-      font-weight: 500;
-      font-size: 1rem;
+      background-color: #cc0000;
       color: #fff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      background-color: #1c1c1c;
+      color: #ddd;
+    }
+
+    .card-body h5 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ccc;
     }
 
     .card-body code {
@@ -47,48 +117,84 @@
     }
 
     .card-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-    }
-
-    .sb-sidenav-footer {
+      background: #1c1c1c;
+      border-top: 1px solid rgba(255,255,255,0.08);
       font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+      color: #999;
+      border-radius: 0 0 6px 6px;
     }
 
-    .text-glow {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    /* Alerts */
+    .alert-dark {
+      background-color: #2a2a2a;
+      color: #fff;
+      border-left: 4px solid #cc0000;
+      border-radius: 6px;
+      padding: 1rem;
     }
 
-    .icon-glow {
-      filter: drop-shadow(0 0 4px #00fff7a4);
-    }
-
+    /* Breadcrumb */
     .breadcrumb {
       background: transparent;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
     }
 
+    .breadcrumb-item.active {
+      color: #ff4d4d;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background-color: #121212;
+      color: #aaa;
+      padding: 1rem 0;
+    }
+
+    /* Form Elements */
+    .form-control {
+      background-color: #333;
+      border: 1px solid #444;
+      color: #fff;
+    }
+
+    .form-control:focus {
+      background-color: #444;
+      border-color: #cc0000;
+      color: #fff;
+      box-shadow: 0 0 0 0.25rem rgba(204, 0, 0, 0.25);
+    }
+
+    .btn-warning {
+      background-color: #cc0000;
+      border-color: #cc0000;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background-color: #e60000;
+      border-color: #e60000;
+    }
+
+    /* Installation Results */
     #installResults {
       font-family: monospace;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: #1c1c1c;
       color: #00ff7f;
-    }
-
-    a {
-      color: #88f1ff;
-    }
-
-    a:hover {
-      color: #b9f9ff;
-      text-decoration: underline;
+      border-radius: 6px;
+      padding: 1rem;
+      height: 200px;
+      overflow-y: auto;
     }
   </style>
 </head>
 
 <body class="sb-nav-fixed">
   <!-- Top Nav -->
-  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark px-4">
-    <a class="navbar-brand text-glow " href="/" >clamNET</a>
+  <nav class="sb-topnav navbar navbar-expand navbar-dark px-4">
+    <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
     <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
   </nav>
 
@@ -100,29 +206,50 @@
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link active" href="/">
-              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
             <div class="sb-sidenav-menu-heading">Tools</div>
             <a class="nav-link" href="/scan">
-              <div class="sb-nav-link-icon"><i class="fas fa-search icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
               File Scanner
             </a>
-            <a class="nav-link" href="/install" style="color:cyan;">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow" style="color:cyan;"></i></div>
+            <a class="nav-link active" href="/install">
+              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:#d63333;"></i></div>
               Install ClamAV
             </a>
             <a class="nav-link" href="/update">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:#d63333;"></i></div>
               Freshclam
             </a>
-            
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:#d63333;"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:#d63333;"></i></div>
+              CFG Analysis
+            </a>
+            <a class="nav-link" href="/pcap-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:#d63333;"></i></div>
+              PCAP Scan
+            </a>
+            <a class="nav-link" href="/pepper-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-file-code" style="color:#d63333;"></i></div>
+              Pepper
+            </a>
+            <a class="nav-link" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:#d63333;"></i></div>
+              About
+            </a>
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
-          <div class="small">System Status:</div>
-          <span class="text-success">●</span> Operational
+            <a class="nav-link" href="/logout">
+              <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+              Logout
+            </a>
         </div>
       </nav>
     </div>
@@ -130,22 +257,29 @@
     <!-- Main Content -->
     <div id="layoutSidenav_content">
       <main class="p-4">
-        <h1 class="mb-3 text-glow">Install ClamAV</h1>
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="mb-3 text-glow" style="color: #000000;">Install ClamAV</h1>
+          <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
+        </div>
+
         <ol class="breadcrumb mb-4">
           <li class="breadcrumb-item active">Install ClamAV on remote hosts</li>
         </ol>
+
+        <!-- How It Works -->
+        <div class="row">
           <div class="col-lg-12 mb-4">
-            <div class="card doc-card h-100">
+            <div class="card text-white">
               <div class="card-header">
                 <i class="fas fa-info-circle me-1"></i> How This Works
               </div>
-              <div class="card-body" style="color:white;">
+              <div class="card-body">
                 <h5 class="mb-3">Remote Installation Process</h5>
                 <p>This tool automates ClamAV installation across multiple hosts using SSH (Linux) or WinRM (Windows).</p>
                 
                 <div class="alert alert-dark mb-3">
-                  <h6><i class="fas fa-cogs me-2"></i>Technical Details</h6>
-                  <ul class="small">
+                  <h5><i class="fas fa-cogs me-2"></i>Technical Details</h5>
+                  <ul>
                     <li>Uses Paramiko for SSH connections</li>
                     <li>Detects OS automatically</li>
                     <li>Parallel installation on multiple hosts</li>
@@ -155,10 +289,10 @@
 
                 <h5 class="mt-4 mb-3">Supported Systems</h5>
                 <div class="row">
-                  <div class="col-6">
-                    <div class="alert alert-dark mb-2">
-                      <h6><i class="fab fa-linux me-2"></i>Linux</h6>
-                      <ul class="small">
+                  <div class="col-md-6 mb-3">
+                    <div class="alert alert-dark h-100">
+                      <h5><i class="fab fa-linux me-2"></i>Linux</h5>
+                      <ul>
                         <li>Ubuntu/Debian</li>
                         <li>CentOS/RHEL</li>
                         <li>Fedora</li>
@@ -166,10 +300,10 @@
                       </ul>
                     </div>
                   </div>
-                  <div class="col-6">
-                    <div class="alert alert-dark mb-2">
-                      <h6><i class="fab fa-windows me-2"></i>Windows</h6>
-                      <ul class="small">
+                  <div class="col-md-6 mb-3">
+                    <div class="alert alert-dark h-100">
+                      <h5><i class="fab fa-windows me-2"></i>Windows</h5>
+                      <ul>
                         <li>Windows 10/11</li>
                         <li>Windows Server</li>
                       </ul>
@@ -178,7 +312,7 @@
                 </div>
 
                 <h5 class="mt-4 mb-3">Requirements</h5>
-                <ul class="small">
+                <ul>
                   <li>SSH access (Linux)</li>
                   <li>Admin privileges (Windows)</li>
                   <li>Python 3.6+ on target hosts</li>
@@ -187,40 +321,40 @@
               </div>
             </div>
           </div>
-        <!-- Install Form -->
-        <div class="card mb-4">
-           <div class="card doc-card h-100"></div>
-          <div class="card-header">
-            <i class="fas fa-download me-1 icon-glow"></i> Install ClamAV
-          </div>
-          <div class="card-body">
-            <form id="installForm">
-              <div class="alert alert-dark mb-3">
-                <label for="installHosts" class="form-label" style="color:rgb(0, 0, 0);">Host IPs (comma separated)</label>
-                <input type="text" class="form-control" id="installHosts" name="install_hosts" placeholder="e.g. 192.168.1.100,192.168.1.101" required />
-              </div>
-             <div class="alert alert-dark mb-3">
-                <label for="installUser" class="form-label" style="color:rgb(0, 0, 0);">Username</label>
-                <input type="text" class="form-control" id="installUser" name="install_user" required />
-              </div>
-             <div class="alert alert-dark mb-3">
-                <label for="installPass" class="form-label" style="color:rgb(0, 0, 0);">Password</label>
-                <input type="password" class="form-control" id="installPass" name="install_pass" required />
-              </div>
-             <button type="submit" class="btn btn-warning">Install clamAV</button>
-            </form>
+        </div>
 
-            <!-- Installation Results -->
-            <div class="mt-4">
-              <h5 style="color:rgb(138, 15, 15);">Installation Results</h5>
-              <div
-                id="installResults"
-                class="p-3 rounded"
-                style="height: 200px; overflow-y: auto;"
-              ></div>
+        <!-- Install Form -->
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card text-white">
+              <div class="card-header">
+                <i class="fas fa-download me-1"></i> Install ClamAV
+              </div>
+              <div class="card-body">
+                <form id="installForm">
+                  <div class="alert alert-dark mb-3">
+                    <label for="installHosts" class="form-label">Host IPs (comma separated)</label>
+                    <input type="text" class="form-control" id="installHosts" name="install_hosts" placeholder="e.g. 192.168.1.100,192.168.1.101" required />
+                  </div>
+                  <div class="alert alert-dark mb-3">
+                    <label for="installUser" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="installUser" name="install_user" required />
+                  </div>
+                  <div class="alert alert-dark mb-3">
+                    <label for="installPass" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="installPass" name="install_pass" required />
+                  </div>
+                  <button type="submit" class="btn btn-warning">Install ClamAV</button>
+                </form>
+
+                <!-- Installation Results -->
+                <div class="mt-4">
+                  <h5>Installation Results</h5>
+                  <div id="installResults"></div>
+                </div>
+              </div>
             </div>
           </div>
-
         </div>
       </main>
 
@@ -246,35 +380,35 @@
   <script src="../static/js/scripts.js"></script>
 
   <script>
-      document.getElementById('installForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const resultsDiv = document.getElementById('installResults');
-        resultsDiv.innerHTML = 'Starting installation...<br>';
+    document.getElementById('installForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const resultsDiv = document.getElementById('installResults');
+      resultsDiv.innerHTML = 'Starting installation...<br>';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch('/perform-install', {
+          method: 'POST',
+          body: formData
+        });
         
-        try {
-          const formData = new FormData(this);
-          const response = await fetch('/perform-install', {
-            method: 'POST',
-            body: formData
-          });
-          
-          if (!response.ok) throw new Error('Network response was not ok');
-          
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder();
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const text = decoder.decode(value);
-            resultsDiv.innerHTML += text.replace('data: ', '') + '<br>';
-            resultsDiv.scrollTop = resultsDiv.scrollHeight;
-          }
-        } catch (error) {
-          resultsDiv.innerHTML += 'Error: ' + error.message + '<br>';
-          console.error('Error:', error);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const text = decoder.decode(value);
+          resultsDiv.innerHTML += text.replace('data: ', '') + '<br>';
+          resultsDiv.scrollTop = resultsDiv.scrollHeight;
         }
-      });
+      } catch (error) {
+        resultsDiv.innerHTML += 'Error: ' + error.message + '<br>';
+        console.error('Error:', error);
+      }
+    });
   </script>
 </body>
 </html>
