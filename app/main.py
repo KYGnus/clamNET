@@ -729,9 +729,9 @@ def get_os():
 
 def build_command(path):
     if get_os() == "Windows":
-        return [r"C:\Program Files\ClamAV\clamscan.exe", "--recursive", "--infected", "--verbose", path]
+        return [r"C:\Program Files\ClamAV\clamscan.exe", "--recursive", "--infected", path]
     else:
-        return ["clamscan", "--recursive", "--infected", "--verbose", path]
+        return ["clamscan", "--recursive", "--infected", path]
 
 
 import paramiko
@@ -985,8 +985,11 @@ def scan():
                     while True:
                         line = stdout.readline()
                         if line:
-                            yield f"data: {line.strip()}\n\n"
-                            start_time = time.time()  # Reset timeout on activity
+                            try:
+                                decoded_line = line.decode('utf-8', errors='replace').strip()
+                                yield f"data: {decoded_line}\n\n"
+                            except UnicodeDecodeError:
+                                yield "data: [binary data]\n\n"
                         elif time.time() - start_time > timeout:
                             yield "data: ⏰ Timeout waiting for scan output\n\n"
                             break
@@ -1011,14 +1014,12 @@ def scan():
                     process = subprocess.Popen(
                         build_command(path), 
                         stdout=subprocess.PIPE, 
-                        stderr=subprocess.STDOUT, 
-                        text=True,
-                        bufsize=1,  # Line buffered
-                        universal_newlines=True
+                        stderr=subprocess.STDOUT,
+                        bufsize=1
                     )
                     
-                    for line in iter(process.stdout.readline, ''):
-                        yield f"data: {line.strip()}\n\n"
+                    for line in iter(process.stdout.readline, b''):  # Note the b'' for bytes
+                        yield f"data: {line.decode('utf-8', errors='replace').strip()}\n\n"
                         
                     process.stdout.close()
                     return_code = process.wait()
