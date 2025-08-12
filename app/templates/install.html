@@ -186,8 +186,26 @@
       color: #00ff7f;
       border-radius: 6px;
       padding: 1rem;
-      height: 200px;
+      height: 300px;
       overflow-y: auto;
+    }
+    
+    /* Status indicators */
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .status-success {
+      background-color: #00ff7f;
+    }
+    .status-failure {
+      background-color: #ff3333;
+    }
+    .status-warning {
+      background-color: #ffcc00;
     }
   </style>
 </head>
@@ -262,6 +280,7 @@
                   <h5><i class="fas fa-cogs me-2"></i>Technical Details</h5>
                   <ul>
                     <li>Uses Paramiko for SSH connections</li>
+                    <li>Supports custom SSH ports (default: 22)</li>
                     <li>Detects OS automatically</li>
                     <li>Parallel installation on multiple hosts</li>
                     <li>Real-time progress streaming</li>
@@ -296,8 +315,8 @@
                 <ul>
                   <li>SSH access (Linux)</li>
                   <li>Admin privileges (Windows)</li>
-                  <li>Python 3.6+ on target hosts</li>
                   <li>Network connectivity</li>
+                  <li>Custom ports must be open in firewall</li>
                 </ul>
               </div>
             </div>
@@ -313,25 +332,49 @@
               </div>
               <div class="card-body">
                 <form id="installForm">
-                  <div class="alert alert-dark mb-3">
-                    <label for="installHosts" class="form-label">Host IPs (comma separated)</label>
-                    <input type="text" class="form-control" id="installHosts" name="install_hosts" placeholder="e.g. 192.168.1.100,192.168.1.101" required />
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="alert alert-dark mb-3">
+                        <label for="installHosts" class="form-label">Host IPs (comma separated)</label>
+                        <input type="text" class="form-control" id="installHosts" name="install_hosts" placeholder="e.g. 192.168.1.100,192.168.1.101" required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="alert alert-dark mb-3">
+                        <label for="installPort" class="form-label">SSH Port</label>
+                        <input type="number" class="form-control" id="installPort" name="install_port" placeholder="22" value="22" min="1" max="65535" />
+                        <small class="text-muted">Default: 22 (leave blank for default)</small>
+                      </div>
+                    </div>
                   </div>
-                  <div class="alert alert-dark mb-3">
-                    <label for="installUser" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="installUser" name="install_user" required />
+                  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="alert alert-dark mb-3">
+                        <label for="installUser" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="installUser" name="install_user" required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="alert alert-dark mb-3">
+                        <label for="installPass" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="installPass" name="install_pass" required />
+                      </div>
+                    </div>
                   </div>
-                  <div class="alert alert-dark mb-3">
-                    <label for="installPass" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="installPass" name="install_pass" required />
-                  </div>
-                  <button type="submit" class="btn btn-warning">Install ClamAV</button>
+                  
+                  <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-play me-1"></i> Start Installation
+                  </button>
+                  <button type="button" id="clearResults" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-trash me-1"></i> Clear Results
+                  </button>
                 </form>
 
                 <!-- Installation Results -->
                 <div class="mt-4">
                   <h5>Installation Results</h5>
-                  <div id="installResults"></div>
+                  <div id="installResults">Ready for installation...</div>
                 </div>
               </div>
             </div>
@@ -361,34 +404,67 @@
   <script src="../static/js/scripts.js"></script>
 
   <script>
-    document.getElementById('installForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+      const installForm = document.getElementById('installForm');
       const resultsDiv = document.getElementById('installResults');
-      resultsDiv.innerHTML = 'Starting installation...<br>';
+      const clearBtn = document.getElementById('clearResults');
       
-      try {
-        const formData = new FormData(this);
-        const response = await fetch('/perform-install', {
-          method: 'POST',
-          body: formData
-        });
+      // Clear results
+      clearBtn.addEventListener('click', function() {
+        resultsDiv.innerHTML = 'Results cleared. Ready for new installation...';
+      });
+      
+      // Form submission
+      installForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        resultsDiv.innerHTML = '<span class="status-indicator status-warning"></span> Starting installation process...<br>';
         
-        if (!response.ok) throw new Error('Network response was not ok');
+        const formData = new FormData(installForm);
         
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const text = decoder.decode(value);
-          resultsDiv.innerHTML += text.replace('data: ', '') + '<br>';
-          resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        try {
+          const response = await fetch('/perform-install', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const text = decoder.decode(value);
+            const lines = text.split('\n');
+            
+            lines.forEach(line => {
+              if (line.startsWith('data: ')) {
+                const content = line.replace('data: ', '');
+                
+                // Add appropriate status indicators
+                if (content.includes('✅')) {
+                  resultsDiv.innerHTML += `<span class="status-indicator status-success"></span> ${content}<br>`;
+                } else if (content.includes('❌')) {
+                  resultsDiv.innerHTML += `<span class="status-indicator status-failure"></span> ${content}<br>`;
+                } else {
+                  resultsDiv.innerHTML += `${content}<br>`;
+                }
+                
+                resultsDiv.scrollTop = resultsDiv.scrollHeight;
+              }
+            });
+          }
+          
+          resultsDiv.innerHTML += '<span class="status-indicator status-success"></span> Installation process completed<br>';
+        } catch (error) {
+          resultsDiv.innerHTML += `<span class="status-indicator status-failure"></span> Error: ${error.message}<br>`;
+          console.error('Installation error:', error);
         }
-      } catch (error) {
-        resultsDiv.innerHTML += 'Error: ' + error.message + '<br>';
-        console.error('Error:', error);
-      }
+      });
     });
   </script>
 </body>

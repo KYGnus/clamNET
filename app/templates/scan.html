@@ -12,153 +12,214 @@
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
   <style>
-body {
-    background-image: url(../static/GIF-Cybersecurity-Lockv2.gif);
-    background-size: cover;
-    font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #000000;
-    padding: 40px 0;
-    min-height: 100vh;
-  }
+    body {
+      background-image: url(../static/GIF-Cybersecurity-Lockv2.gif);
+      background-size: cover;
+      font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #000000;
+      padding: 40px 0;
+      min-height: 100vh;
+    }
 
-  h1, h2, h3, h4, h5 {
-    font-weight: 700;
-    color: #fff;
-  }
+    h1, h2, h3, h4, h5 {
+      font-weight: 700;
+      color: #fff;
+    }
 
-  h1 {
-    border-bottom: 2px solid #cc0000;
-    padding-bottom: 0.4rem;
-    margin-bottom: 1.5rem;
-  }
+    h1 {
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
 
-  /* Navbar */
-  .navbar, .sb-sidenav {
-    background-color: #121212 !important;
-    border-bottom: 2px solid #cc0000;
-  }
+    /* Navbar */
+    .navbar, .sb-sidenav {
+      background-color: #121212 !important;
+      border-bottom: 2px solid #cc0000;
+    }
 
-  .navbar-brand {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #fff !important;
-  }
+    .navbar-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff !important;
+    }
 
-  .navbar-brand:hover {
-    color: #ff4d4d !important;
-  }
+    .navbar-brand:hover {
+      color: #ff4d4d !important;
+    }
 
-  /* Sidebar Links */
-  .nav-link {
-    color: #bbb;
-    padding: 0.65rem 1rem;
-    border-radius: 6px;
-    margin-bottom: 4px;
-    transition: background 0.2s, color 0.2s;
-  }
+    /* Sidebar Links */
+    .nav-link {
+      color: #bbb;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
 
-  .nav-link:hover {
-    background-color: rgba(204, 0, 0, 0.2);
-    color: #fff;
-  }
+    .nav-link:hover {
+      background-color: rgba(204, 0, 0, 0.2);
+      color: #fff;
+    }
 
-  .nav-link.active {
-    background-color: #cc0000;
-    color: #fff;
-  }
+    .nav-link.active {
+      background-color: #cc0000;
+      color: #fff;
+    }
 
-  .sb-sidenav .nav-link .sb-nav-link-icon {
-    color: #cc0000;
-  }
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      color: #cc0000;
+    }
 
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 6px;
+      background-color: #26262600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
 
-/* Cards - Red Hat Style */
-.card {
-  border: none;
-  border-radius: 6px;
-  background-color: #26262600;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-}
+    .card-header {
+      background-color: #cc0000;
+      color: #fff;
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-.card-header {
-  background-color: #cc0000;
-  color: #fff;
-  font-weight: 600;
-  padding: 0.7rem 1rem;
-  border-radius: 6px 6px 0 0;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+    .card-body {
+      padding: 1.25rem;
+      background-color: #1c1c1cb2;
+      color: #ddd;
+    }
 
-.card-body {
-  padding: 1.25rem;
-  background-color: #1c1c1cb2;
-  color: #ddd;
-}
+    .card-body h5 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ccc;
+    }
 
-.card-body h5 {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #ccc;
-}
+    .card-body h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
 
-.card-body h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #fff;
-}
+    .card-body p {
+      margin: 0.3rem 0;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
 
-.card-body p {
-  margin: 0.3rem 0;
-  font-size: 0.9rem;
-  color: #aaa;
-}
+    .card-footer {
+      background: #1c1c1c;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+      color: #999;
+      border-radius: 0 0 6px 6px;
+    }
 
-.card-footer {
-  background: #1c1c1c;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  font-size: 0.85rem;
-  padding: 0.6rem 1rem;
-  color: #999;
-  border-radius: 0 0 6px 6px;
-}
+    /* Alerts */
+    .alert-dark {
+      background-color: #2a2a2a;
+      color: #fff;
+      border-left: 4px solid #cc0000;
+      border-radius: 6px;
+      padding: 1rem;
+    }
 
+    /* Breadcrumb */
+    .breadcrumb {
+      background: transparent;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
 
-  /* Alerts */
-  .alert-dark {
-    background-color: #2a2a2a;
-    color: #fff;
-    border-left: 4px solid #cc0000;
-    border-radius: 6px;
-    padding: 1rem;
-  }
+    .breadcrumb-item.active {
+      color: #ff4d4d;
+    }
 
-  /* Breadcrumb */
-  .breadcrumb {
-    background: transparent;
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-  }
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background-color: #121212;
+      color: #aaa;
+      padding: 1rem 0;
+    }
 
-  .breadcrumb-item.active {
-    color: #ff4d4d;
-  }
+    /* Form Elements */
+    .form-control {
+      background-color: #333;
+      border: 1px solid #444;
+      color: #fff;
+    }
 
-  /* Footer */
-  footer {
-    border-top: 1px solid rgba(255,255,255,0.08);
-    background-color: #121212;
-    color: #aaa;
-    padding: 1rem 0;
-  }
-    
+    .form-control:focus {
+      background-color: #444;
+      border-color: #cc0000;
+      color: #fff;
+      box-shadow: 0 0 0 0.25rem rgba(204, 0, 0, 0.25);
+    }
+
+    /* Scan Results */
+    #scanResults {
+      font-family: monospace;
+      background-color: #1c1c1c;
+      color: #00ff7f;
+      border-radius: 6px;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+    }
+
+    /* Status indicators */
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .status-success {
+      background-color: #00ff7f;
+    }
+    .status-failure {
+      background-color: #ff3333;
+    }
+    .status-warning {
+      background-color: #ffcc00;
+    }
+    .status-info {
+      background-color: #3399ff;
+    }
+
+    /* Tab styling */
+    .nav-tabs .nav-link {
+      color: #bbb;
+      background-color: #2a2a2a;
+      border: 1px solid transparent;
+      border-bottom-color: #444;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #fff;
+      background-color: #1c1c1c;
+      border-color: #444 #444 #cc0000;
+    }
+
+    .nav-tabs .nav-link:hover {
+      border-color: #444 #444 #666;
+    }
   </style>
 </head>
 
@@ -177,24 +238,23 @@ body {
         <div class="sb-sidenav-menu px-2">
           <div class="nav">
             <div class="sb-sidenav-menu-heading">Core</div>
-            <a class="nav-link active" href="/">
-              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt icon-glow"></i></div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
               Dashboard
             </a>
             <div class="sb-sidenav-menu-heading">Tools</div>
-            <a class="nav-link" href="/scan" style="color:#d63333;">
+            <a class="nav-link active" href="/scan">
               <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
               File Scanner
             </a>
             <a class="nav-link" href="/install">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow" style="color:#d63333;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-shield-alt" style="color:#d63333;"></i></div>
               Install ClamAV
             </a>
             <a class="nav-link" href="/update">
-              <div class="sb-nav-link-icon"><i class="fas fa-download icon-glow" style="color:#d63333;"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-sync-alt" style="color:#d63333;"></i></div>
               Freshclam
             </a>
-     
           </div>
         </div>
         <div class="sb-sidenav-footer text-light">
@@ -213,10 +273,10 @@ body {
         </ol>
 
         <div class="card mb-4">
-          <div class="alert alert-dark mb-3">
-            <i class="fas fa-search me-1 icon-glow"></i> File Scanner
+          <div class="card-header">
+            <i class="fas fa-search me-1"></i> File Scanner
           </div>
-          <div class="card-body ">
+          <div class="card-body">
             <ul class="nav nav-tabs mb-3" id="scanTab" role="tablist">
               <li class="nav-item" role="presentation">
                 <button
@@ -228,8 +288,6 @@ body {
                   role="tab"
                   aria-controls="local-scan"
                   aria-selected="true"
-                  style="color:black;"
-                  
                 >
                   Local Scan
                 </button>
@@ -244,8 +302,7 @@ body {
                   role="tab"
                   aria-controls="remote-scan"
                   aria-selected="false"
-                  style="color:white;"
-                 >
+                >
                   Remote Scan
                 </button>
               </li>
@@ -258,9 +315,9 @@ body {
                 role="tabpanel"
                 aria-labelledby="local-tab"
               >
-                <form id="localScanForm" method="post" enctype="multipart/form-data" action="/scan" >
+                <form id="localScanForm">
                   <div class="mb-3">
-                    <label for="scanPath" class="form-label" style="color:rgb(138, 15, 15);">Path to Scan</label>
+                    <label for="scanPath" class="form-label">Path to Scan</label>
                     <input
                       type="text"
                       class="form-control"
@@ -270,7 +327,12 @@ body {
                       required
                     />
                   </div>
-                  <button type="submit" class="btn btn-primary">Start Scan</button>
+                  <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-play me-1"></i> Start Scan
+                  </button>
+                  <button type="button" id="clearLocalResults" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-trash me-1"></i> Clear Results
+                  </button>
                 </form>
               </div>
 
@@ -280,39 +342,55 @@ body {
                 id="remote-scan"
                 role="tabpanel"
                 aria-labelledby="remote-tab"
-                
               >
-                <form id="remoteScanForm" style="color:white;">
-                  <div class="mb-3" >
-                    <label for="remoteHost" class="form-label">Remote Host IP</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="remoteHost"
-                      name="remote_host"
-                      placeholder="e.g. 192.168.1.100"
-                      required
-                    />
+                <form id="remoteScanForm">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="remoteHost" class="form-label">Remote Host IP</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="remoteHost"
+                        name="remote_host"
+                        placeholder="e.g. 192.168.1.100"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="remotePort" class="form-label">SSH Port</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="remotePort"
+                        name="remote_port"
+                        placeholder="22"
+                        value="22"
+                        min="1"
+                        max="65535"
+                      />
+                    </div>
                   </div>
-                  <div class="mb-3">
-                    <label for="remoteUser" class="form-label">Username</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="remoteUser"
-                      name="remote_user"
-                      required
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="remotePass" class="form-label">Password</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="remotePass"
-                      name="remote_pass"
-                      required
-                    />
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="remoteUser" class="form-label">Username</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="remoteUser"
+                        name="remote_user"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="remotePass" class="form-label">Password</label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="remotePass"
+                        name="remote_pass"
+                        required
+                      />
+                    </div>
                   </div>
                   <div class="mb-3">
                     <label for="remotePath" class="form-label">Path to Scan</label>
@@ -325,19 +403,20 @@ body {
                       required
                     />
                   </div>
-                  <button type="submit" class="btn btn-info">Start Remote Scan</button>
+                  <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-play me-1"></i> Start Remote Scan
+                  </button>
+                  <button type="button" id="clearRemoteResults" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-trash me-1"></i> Clear Results
+                  </button>
                 </form>
               </div>
             </div>
 
             <!-- Scan Results -->
             <div class="mt-4">
-              <h5 style="color:rgb(138, 15, 15);">Scan Results</h5>
-              <div
-                id="scanResults"
-                class="p-3 rounded"
-                style="height: 300px; overflow-y: auto;"
-              ></div>
+              <h5>Scan Results</h5>
+              <div id="scanResults">Ready for scanning...</div>
             </div>
           </div>
         </div>
@@ -364,55 +443,125 @@ body {
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
   <script src="../static/js/scripts.js"></script>
 
-<script>
-    // Handle local scan form submission
-    document.getElementById('localScanForm').addEventListener('submit', function(e) {
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const localScanForm = document.getElementById('localScanForm');
+      const remoteScanForm = document.getElementById('remoteScanForm');
+      const scanResults = document.getElementById('scanResults');
+      const clearLocalBtn = document.getElementById('clearLocalResults');
+      const clearRemoteBtn = document.getElementById('clearRemoteResults');
+      let currentEventSource = null;
+
+      // Clear results
+      clearLocalBtn.addEventListener('click', function() {
+        scanResults.innerHTML = 'Local scan results cleared. Ready for new scan...';
+      });
+
+      clearRemoteBtn.addEventListener('click', function() {
+        scanResults.innerHTML = 'Remote scan results cleared. Ready for new scan...';
+      });
+
+      // Close any existing EventSource connection
+      function closeCurrentConnection() {
+        if (currentEventSource) {
+          currentEventSource.close();
+          currentEventSource = null;
+        }
+      }
+
+      // Handle local scan form submission
+      localScanForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        closeCurrentConnection();
+        
         const scanPath = document.getElementById('scanPath').value;
-        const resultsDiv = document.getElementById('scanResults');
-        resultsDiv.innerHTML = '';
+        scanResults.innerHTML = '<span class="status-indicator status-info"></span> Starting local scan...<br>';
 
-        const eventSource = new EventSource(`/perform-scan?scan_path=${encodeURIComponent(scanPath)}`);
+        const url = new URL('/perform-scan', window.location.origin);
+        url.searchParams.append('scan_path', encodeURIComponent(scanPath));
 
-        eventSource.onmessage = function(event) {
-            const message = event.data.replace('data: ', '');
-            resultsDiv.innerHTML += message + '<br>';
-            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        currentEventSource = new EventSource(url.toString());
+
+        currentEventSource.onmessage = function(event) {
+          const message = event.data.replace('data: ', '');
+          let formattedMessage = message;
+          
+          // Add appropriate status indicators
+          if (message.includes('✅')) {
+            formattedMessage = `<span class="status-indicator status-success"></span> ${message}`;
+          } else if (message.includes('❌')) {
+            formattedMessage = `<span class="status-indicator status-failure"></span> ${message}`;
+          } else if (message.includes('⚠️')) {
+            formattedMessage = `<span class="status-indicator status-warning"></span> ${message}`;
+          } else if (message.includes('🔍') || message.includes('💻') || message.includes('🔗')) {
+            formattedMessage = `<span class="status-indicator status-info"></span> ${message}`;
+          }
+          
+          scanResults.innerHTML += formattedMessage + '<br>';
+          scanResults.scrollTop = scanResults.scrollHeight;
         };
 
-        eventSource.onerror = function() {
-            eventSource.close();
+        currentEventSource.onerror = function() {
+          scanResults.innerHTML += '<span class="status-indicator status-failure"></span> Scan connection closed<br>';
+          currentEventSource.close();
         };
-    });
+      });
 
-    // Handle remote scan form submission
-    document.getElementById('remoteScanForm').addEventListener('submit', function(e) {
+      // Handle remote scan form submission
+    remoteScanForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        closeCurrentConnection();
+        
         const remoteHost = document.getElementById('remoteHost').value;
+        const remotePort = document.getElementById('remotePort').value || '22';
         const username = document.getElementById('remoteUser').value;
         const password = document.getElementById('remotePass').value;
         const scanPath = document.getElementById('remotePath').value;
-        const resultsDiv = document.getElementById('scanResults');
-        resultsDiv.innerHTML = '';
+        
+        // Only encode the path (not the whole URL)
+        const encodedPath = encodeURIComponent(scanPath);
+        
+        scanResults.innerHTML = '<span class="status-indicator status-info"></span> Preparing remote scan...<br>';
 
         const url = new URL('/perform-scan', window.location.origin);
-        url.searchParams.append("remote_host", remoteHost);
-        url.searchParams.append("remote_user", username);
-        url.searchParams.append("remote_pass", password);
-        url.searchParams.append("scan_path", scanPath);
+        url.searchParams.append('remote_host', remoteHost);
+        url.searchParams.append('remote_port', remotePort);
+        url.searchParams.append('remote_user', username);
+        url.searchParams.append('remote_pass', password);
+        url.searchParams.append('scan_path', scanPath); // Don't encode here - let the browser handle it
 
-        const eventSource = new EventSource(url.toString());
+    currentEventSource = new EventSource(url.toString());
 
-        eventSource.onmessage = function(event) {
-            const message = event.data.replace('data: ', '');
-            resultsDiv.innerHTML += message + '<br>';
-            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        currentEventSource.onmessage = function(event) {
+          const message = event.data.replace('data: ', '');
+          let formattedMessage = message;
+          
+          // Add appropriate status indicators
+          if (message.includes('✅')) {
+            formattedMessage = `<span class="status-indicator status-success"></span> ${message}`;
+          } else if (message.includes('❌')) {
+            formattedMessage = `<span class="status-indicator status-failure"></span> ${message}`;
+          } else if (message.includes('⚠️')) {
+            formattedMessage = `<span class="status-indicator status-warning"></span> ${message}`;
+          } else if (message.includes('🔍') || message.includes('💻') || message.includes('🔗')) {
+            formattedMessage = `<span class="status-indicator status-info"></span> ${message}`;
+          }
+          
+          scanResults.innerHTML += formattedMessage + '<br>';
+          scanResults.scrollTop = scanResults.scrollHeight;
         };
 
-        eventSource.onerror = function() {
-            eventSource.close();
+        currentEventSource.onerror = function() {
+          scanResults.innerHTML += '<span class="status-indicator status-failure"></span> Remote scan connection closed<br>';
+          currentEventSource.close();
         };
+      });
+
+      // Clean up EventSource when leaving page
+      window.addEventListener('beforeunload', function() {
+        closeCurrentConnection();
+      });
     });
-</script>
+  </script>
 </body>
 </html>

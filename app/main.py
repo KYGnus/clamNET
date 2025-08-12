@@ -32,8 +32,9 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 import uuid
 from modules import pcap
-
-
+import shlex
+from concurrent.futures import as_completed, ThreadPoolExecutor
+from urllib.parse import unquote
 
 
 
@@ -93,124 +94,61 @@ def test_connection(self):
     except:
         return False
 
-# Add this near the top of main.py, after the imports
 class ClamAVInstaller:
     def __init__(self, host, username, password, port=22):
+        if not host or not username or not password:
+            raise ValueError("Missing required connection parameters")
+            
         self.host = host
         self.username = username
         self.password = password
-        self.port = port
+        self.port = int(port)
         self.ssh = None
+        self.sftp = None
         self.os_type = None
         self.distro = None
-
-    # In your ClamAVInstaller class, modify the connect method:
+        self.connected = False
+        
+    def __enter__(self):
+        """Support context manager protocol"""
+        self.connect()
+        return self
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Ensure cleanup on context exit"""
+        if self.sftp:
+            self.sftp.close()
+        if self.ssh:
+            self.ssh.close()
+        return False
+        
     def connect(self, timeout=30):
+        """Establish SSH and SFTP connections"""
+        if self.connected and self.ssh.get_transport().is_active():
+            return True
+            
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
             self.ssh.connect(
-                self.host,
+                hostname=self.host,
                 port=self.port,
                 username=self.username,
                 password=self.password,
                 timeout=timeout,
-                banner_timeout=timeout+15,  # Extended banner timeout
-                auth_timeout=timeout,
-                channel_timeout=timeout
+                banner_timeout=timeout+15,
+                auth_timeout=timeout
             )
+            self.sftp = self.ssh.open_sftp()
+            self.connected = True
+            return True
         except Exception as e:
+            self.connected = False
+            if self.sftp:
+                self.sftp.close()
             if self.ssh:
                 self.ssh.close()
-            raise Exception(f"SSH connection failed: {str(e)}")
-
-    def update_database(self, timeout=300):
-        """Update ClamAV virus databases with enhanced OS detection and streaming output"""
-        try:
-            self.connect()
-
-            # Step 1: Detect OS
-            os_type = None
-            os_details = "Unknown OS"
-
-            # Try Linux/Unix detection
-            stdin, stdout, stderr = self.ssh.exec_command("uname -s")
-            uname_output = stdout.read().decode('utf-8', errors='ignore').strip()
-            stderr_output = stderr.read().decode('utf-8', errors='ignore').strip()
-            if uname_output:
-                if "Linux" in uname_output:
-                    os_type = 'linux'
-                    stdin, stdout, stderr = self.ssh.exec_command("cat /etc/os-release || lsb_release -a || echo 'NO_DISTRO'")
-                    os_details = stdout.read().decode('utf-8', errors='ignore').strip() or "Linux (unknown distro)"
-                elif "FreeBSD" in uname_output or "SunOS" in uname_output:
-                    os_type = None
-                    os_details = f"Unsupported Unix-like OS: {uname_output}"
-
-            if not os_type:
-                # Try Windows detection
-                stdin, stdout, stderr = self.ssh.exec_command("ver")
-                ver_output = stdout.read().decode('utf-8', errors='ignore').strip()
-                stderr_output = stderr.read().decode('utf-8', errors='ignore').strip()
-                if "Microsoft" in ver_output:
-                    os_type = 'windows'
-                    os_details = f"Windows ({ver_output})"
-                else:
-                    stdin, stdout, stderr = self.ssh.exec_command("systeminfo")
-                    systeminfo_output = stdout.read().decode('utf-8', errors='ignore').strip()
-                    if "Microsoft" in systeminfo_output:
-                        os_type = 'windows'
-                        os_details = f"Windows (detected via systeminfo)"
-                    else:
-                        os_details = f"Failed to detect OS: uname='{uname_output}', ver='{ver_output}', systeminfo='{systeminfo_output[:100]}...'"
-
-            if not os_type:
-                return False, f"Unsupported operating system: {os_details}"
-
-            self.os_type = os_type
-
-            # Step 2: Execute freshclam command
-            output = []
-            if os_type == 'linux':
-                cmd = "sudo freshclam --verbose"
-                exit_status, stdout, stderr = self.execute_command(cmd, timeout)
-                output.append(stdout)
-                if stderr:
-                    output.append(f"Error: {stderr}")
-                if exit_status != 0:
-                    return False, '\n'.join(output) or "Update failed: No output"
-            elif os_type == 'windows':
-                cmd = '"C:\\Program Files\\ClamAV\\freshclam.exe" --verbose'
-                chan = self.ssh.get_transport().open_session()
-                chan.settimeout(timeout)
-                chan.exec_command(cmd)
-                while not chan.exit_status_ready():
-                    if chan.recv_ready():
-                        output.append(chan.recv(1024).decode('utf-8', errors='ignore'))
-                    if chan.recv_stderr_ready():
-                        output.append(chan.recv_stderr(1024).decode('utf-8', errors='ignore'))
-                    time.sleep(0.1)
-                if chan.recv_ready():
-                    output.append(chan.recv(1024).decode('utf-8', errors='ignore'))
-                if chan.recv_stderr_ready():
-                    output.append(chan.recv_stderr(1024).decode('utf-8', errors='ignore'))
-                exit_status = chan.recv_exit_status()
-                if exit_status != 0:
-                    return False, '\n'.join(output) or "Update failed: No output"
-
-            output_str = '\n'.join(output).strip()
-            return True, output_str
-
-        except socket.timeout:
-            return False, "Operation timed out"
-        except paramiko.AuthenticationException:
-            return False, "Authentication failed"
-        except paramiko.SSHException as e:
-            return False, f"SSH error: {str(e)}"
-        except Exception as e:
-            return False, f"Update error: {str(e)}"
-        finally:
-            if hasattr(self, 'ssh') and self.ssh:
-                self.ssh.close()
+            raise Exception(f"Connection failed: {str(e)}")
 
     def execute_command(self, command, wait=True):
         """Execute a command on the remote host with proper sudo handling"""
@@ -227,6 +165,84 @@ class ClamAVInstaller:
             error = stderr.read().decode().strip()
             return exit_status, output, error
         return None, None, None
+
+    def detect_os(self):
+        """Enhanced OS detection with better Windows 11 support over SSH"""
+        try:
+            # 1. Try Linux/Unix detection
+            stdin, stdout, stderr = self.ssh.exec_command("uname -s")
+            uname_output = stdout.read().decode('utf-8', errors='ignore').strip().lower()
+
+            if "linux" in uname_output:
+                self.os_type = 'linux'
+                stdin, stdout, stderr = self.ssh.exec_command(
+                    "cat /etc/os-release || lsb_release -a || echo 'NO_DISTRO'"
+                )
+                os_details = stdout.read().decode('utf-8', errors='ignore').strip().lower()
+                if "ubuntu" in os_details:
+                    self.distro = 'ubuntu'
+                elif "debian" in os_details:
+                    self.distro = 'debian'
+                elif "centos" in os_details or "rhel" in os_details:
+                    self.distro = 'centos'
+                elif "fedora" in os_details:
+                    self.distro = 'fedora'
+                elif "opensuse" in os_details or "suse" in os_details:
+                    self.distro = 'opensuse'
+                else:
+                    self.distro = 'linux'
+                return True
+
+            # 2. Try Windows detection (forcing PowerShell)
+            win_commands = [
+                'powershell -Command "(Get-CimInstance Win32_OperatingSystem).Caption"',
+                'powershell -Command "wmic os get caption"'
+            ]
+
+            for cmd in win_commands:
+                stdin, stdout, stderr = self.ssh.exec_command(cmd)
+                output = stdout.read().decode('utf-8', errors='ignore').strip()
+
+                if any(keyword in output for keyword in ["Microsoft", "Windows", "windows"]):
+                    self.os_type = 'windows'
+                    output_lower = output.lower()
+                    if "windows 11" in output_lower:
+                        self.distro = 'windows11'
+                    elif "windows 10" in output_lower:
+                        self.distro = 'windows10'
+                    elif "server" in output_lower:
+                        self.distro = 'windowsserver'
+                    else:
+                        self.distro = 'windows'
+                    return True
+
+            return False
+
+        except Exception as e:
+            print(f"OS detection error: {str(e)}")
+            return False
+
+
+    def install(self):
+        """Main installation method with improved OS detection"""
+        try:
+            self.connect()
+            
+            if not self.detect_os():
+                return False, "Failed to detect operating system"
+            
+            if self.os_type == 'linux':
+                return self.install_linux()
+            elif self.os_type == 'windows':
+                return self.install_windows()
+            else:
+                return False, f"Unsupported operating system: {self.os_type}"
+                
+        except Exception as e:
+            return False, f"Connection/Installation error: {str(e)}"
+        finally:
+            if self.ssh:
+                self.ssh.close()
 
     def install_linux(self):
         """Install ClamAV on Linux based on distribution"""
@@ -252,145 +268,124 @@ class ClamAVInstaller:
                 return False, f"Installation failed: {error}"
 
         return True, "ClamAV installed successfully on Linux"
+    
+
+    def transfer_file(self, local_path, remote_path):
+        """Securely transfer a file to the remote host"""
+        try:
+            self.sftp.put(local_path, remote_path)
+            return True, "File transferred successfully"
+        except Exception as e:
+            return False, f"File transfer failed: {str(e)}"
+        
 
     def install_windows(self):
-        """Install ClamAV on Windows using local MSI file"""
+        """Install ClamAV on Windows by transferring MSI and database"""
         try:
-            # Copy the local MSI file to the remote system
-            local_msi_path = "clamav-1.4.3.win.x64.msi"  # Path on admin system
-            remote_msi_path = "clamav-installer.msi"     # Path on remote system
-            
-            copy_cmd = f"powershell -Command \"Copy-Item -Path '{local_msi_path}' -Destination '{remote_msi_path}'\""
-            exit_status, _, error = self.execute_command(copy_cmd)
-            if exit_status != 0:
-                return False, f"File copy failed: {error}"
+            local_msi_path = config.LOCAL_INSTALL_FILE
+            remote_msi_path = config.REMOTE_INSTALL_FILE
+            local_cvd_path = config.LOCAL_CVD_FILE   # e.g., "/path/to/daily.cvd"
+            remote_cvd_path = "C:/Program Files/ClamAV/database/daily.cvd"
 
-            # Install from the copied MSI file
+            # Step 1: Transfer the MSI file
+            success, message = self.transfer_file(local_msi_path, remote_msi_path)
+            if not success:
+                return False, message
+
+            # Step 2: Install the MSI
             install_cmd = (
-                "msiexec /i clamav-installer.msi /quiet /qn /norestart "
+                f"msiexec /i {remote_msi_path} /quiet /qn /norestart "
                 "ADDLOCAL=ALL INSTALLDIR=\"C:\\Program Files\\ClamAV\""
             )
             exit_status, _, error = self.execute_command(install_cmd)
             if exit_status != 0:
                 return False, f"Installation failed: {error}"
 
-            time.sleep(30)
-
+            # Step 3: Configure ClamAV
             config_commands = [
                 "mkdir \"C:\\Program Files\\ClamAV\\database\"",
                 "copy \"C:\\Program Files\\ClamAV\\conf_examples\\clamd.conf.sample\" \"C:\\Program Files\\ClamAV\\clamd.conf\"",
                 "copy \"C:\\Program Files\\ClamAV\\conf_examples\\freshclam.conf.sample\" \"C:\\Program Files\\ClamAV\\freshclam.conf\"",
-                "(Get-Content \"C:\\Program Files\\ClamAV\\clamd.conf\") | " +
-                "ForEach-Object { $_ -replace '^Example', '#Example' } | " +
-                "Set-Content \"C:\\Program Files\\ClamAV\\clamd.conf\"",
-                # ... (keep all other config commands)
+                "(Get-Content \"C:\\Program Files\\ClamAV\\clamd.conf\") | ForEach-Object { $_ -replace '^Example', '#Example' } | Set-Content \"C:\\Program Files\\ClamAV\\clamd.conf\"",
             ]
-
             for cmd in config_commands:
                 exit_status, _, error = self.execute_command(cmd)
                 if exit_status != 0:
                     return False, f"Configuration failed: {error}"
 
-            return True, "ClamAV installed and configured successfully on Windows"
+            # Step 4: Transfer daily.cvd database file
+            success, message = self.transfer_file(local_cvd_path, remote_cvd_path)
+            if not success:
+                return False, f"Failed to transfer daily.cvd: {message}"
+
+            return True, "ClamAV installed, configured, and database transferred successfully"
+
         except Exception as e:
             return False, f"Windows installation error: {str(e)}"
+        finally:
+            # Clean up the installer file
+            if self.sftp:
+                try:
+                    self.sftp.remove(remote_msi_path)
+                except:
+                    pass
 
-    def install(self):
-        """Main installation method"""
+
+    def update_database(self, timeout=300):
+        """Update ClamAV virus databases with streaming output"""
         try:
             self.connect()
-            
-            if self.os_type == 'linux':
-                return self.install_linux()
-            elif self.os_type == 'windows':
-                return self.install_windows()
+
+            stdin, stdout, stderr = self.ssh.exec_command("uname")
+            os_type = stdout.read().decode().strip()
+            if "Linux" in os_type:
+                self.os_type = 'linux'
+                cmd = "sudo freshclam --verbose"
             else:
-                return False, "Unsupported operating system"
+                stdin, stdout, stderr = self.ssh.exec_command("ver")
+                if "Microsoft" in stdout.read().decode():
+                    self.os_type = 'windows'
+                    cmd = '"C:\\Program Files\\ClamAV\\freshclam.exe" --verbose'
+                else:
+                    return False, "Unsupported operating system"
+
+            chan = self.ssh.get_transport().open_session()
+            chan.settimeout(timeout)
+            chan.exec_command(cmd)
+
+            output = []
+            while not chan.exit_status_ready():
+                if chan.recv_ready():
+                    data = chan.recv(1024).decode('utf-8', errors='ignore')
+                    output.append(data)
+                if chan.recv_stderr_ready():
+                    error = chan.recv_stderr(1024).decode('utf-8', errors='ignore')
+                    output.append(f"Error: {error}")
+                time.sleep(0.1)
+
+            if chan.recv_ready():
+                output.append(chan.recv(1024).decode('utf-8', errors='ignore'))
+            if chan.recv_stderr_ready():
+                output.append(chan.recv_stderr(1024).decode('utf-8', errors='ignore'))
+
+            exit_status = chan.recv_exit_status()
+            output_str = ''.join(output).strip()
+
+            if exit_status != 0:
+                return False, f"Update failed: {output_str}"
+            return True, output_str
+
+        except socket.timeout:
+            return False, "Operation timed out"
+        except paramiko.AuthenticationException:
+            return False, "Authentication failed"
+        except paramiko.SSHException as e:
+            return False, f"SSH error: {str(e)}"
         except Exception as e:
-            return False, f"Connection/Installation error: {str(e)}"
+            return False, f"Update error: {str(e)}"
         finally:
             if self.ssh:
                 self.ssh.close()
-
-def install_on_hosts(hosts, username, password, max_threads=5):
-    """Install ClamAV on multiple hosts in parallel"""
-    results = []
-    
-    def process_host(host):
-        installer = ClamAVInstaller(host, username, password)
-        success, message = installer.install()
-        return {
-            'host': host,
-            'success': success,
-            'message': message
-        }
-    
-    with ThreadPoolExecutor(max_workers=max_threads) as executor:
-        futures = [executor.submit(process_host, host) for host in hosts]
-        for future in concurrent.futures.as_completed(futures):
-            results.append(future.result())
-    
-    return results
-
-
-def update_database(self, timeout=300):
-    """Update ClamAV virus databases with streaming output"""
-    try:
-        self.connect()
-
-        # Detect OS
-        stdin, stdout, stderr = self.ssh.exec_command("uname")
-        os_type = stdout.read().decode().strip()
-        if "Linux" in os_type:
-            self.os_type = 'linux'
-            cmd = "sudo freshclam --verbose"
-        else:
-            stdin, stdout, stderr = self.ssh.exec_command("ver")
-            if "Microsoft" in stdout.read().decode():
-                self.os_type = 'windows'
-                cmd = '"C:\\Program Files\\ClamAV\\freshclam.exe" --verbose'
-            else:
-                return False, "Unsupported operating system"
-
-        # Execute command with streaming
-        chan = self.ssh.get_transport().open_session()
-        chan.settimeout(timeout)
-        chan.exec_command(cmd)
-
-        output = []
-        while not chan.exit_status_ready():
-            if chan.recv_ready():
-                data = chan.recv(1024).decode('utf-8', errors='ignore')
-                output.append(data)
-            if chan.recv_stderr_ready():
-                error = chan.recv_stderr(1024).decode('utf-8', errors='ignore')
-                output.append(f"Error: {error}")
-            time.sleep(0.1)
-
-        # Read any remaining output
-        if chan.recv_ready():
-            output.append(chan.recv(1024).decode('utf-8', errors='ignore'))
-        if chan.recv_stderr_ready():
-            output.append(chan.recv_stderr(1024).decode('utf-8', errors='ignore'))
-
-        exit_status = chan.recv_exit_status()
-        output_str = ''.join(output).strip()
-
-        if exit_status != 0:
-            return False, f"Update failed: {output_str}"
-        return True, output_str
-
-    except socket.timeout:
-        return False, "Operation timed out"
-    except paramiko.AuthenticationException:
-        return False, "Authentication failed"
-    except paramiko.SSHException as e:
-        return False, f"SSH error: {str(e)}"
-    except Exception as e:
-        return False, f"Update error: {str(e)}"
-    finally:
-        if self.ssh:
-            self.ssh.close()
 
 
 class IOCScanner:
@@ -738,35 +733,151 @@ def build_command(path):
     else:
         return ["clamscan", "--recursive", "--infected", "--verbose", path]
 
-def ssh_scan(host, username, password, path):
-    import paramiko
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname=host, username=username, password=password)
 
-    # Detect OS: Try Linux first, then Windows
-    stdin, stdout, stderr = ssh.exec_command("uname")
-    remote_os = stdout.read().decode().strip()
+import paramiko
 
-    if "Linux" in remote_os:
-        scan_cmd = f"clamscan --recursive --infected --verbose {path}"
-    else:
-        # Try Windows detection
-        stdin, stdout, stderr = ssh.exec_command("ver")
-        windows_check = stdout.read().decode().strip()
-        if "Microsoft" in windows_check:
-            remote_os = "Windows"
-            scan_cmd = f'"C:\\Program Files\\ClamAV\\clamscan.exe" --recursive --infected --verbose {path}'
-        else:
-            remote_os = "Unknown"
-            scan_cmd = None
+def ssh_scan(host, username, password, path, port=22):
+    """Perform remote ClamAV scan on Windows or Linux via SSH"""
+    ssh = None
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        
+        # Enhanced connection with better error reporting
+        try:
+            ssh.connect(
+                hostname=host,
+                port=port,
+                username=username,
+                password=password,
+                timeout=30,
+                banner_timeout=45,
+                auth_timeout=30,
+                allow_agent=False,
+                look_for_keys=False
+            )
+        except paramiko.AuthenticationException:
+            raise Exception("Authentication failed - check username/password")
+        except paramiko.SSHException as e:
+            raise Exception(f"SSH connection error: {str(e)}")
+        except socket.timeout:
+            raise Exception("Connection timed out - check host/port/firewall")
+        except Exception as e:
+            raise Exception(f"Connection error: {str(e)}")
 
-    if not scan_cmd:
-        raise Exception("Unsupported OS or failed to detect remote OS")
+        # Verify connection is active
+        if not ssh.get_transport() or not ssh.get_transport().is_active():
+            raise Exception("SSH transport not active after connection")
 
-    # Run Scan
-    stdin, stdout, stderr = ssh.exec_command(scan_cmd)
-    return remote_os, stdout, stderr
+        # OS detection - try Linux first
+        stdin, stdout, stderr = ssh.exec_command("uname -s")
+        uname_out = stdout.read().decode().strip().lower()
+        
+        if "linux" in uname_out:
+            # Linux scan
+            scan_path = path or "."
+            if ' ' in scan_path and not (scan_path.startswith('"') and scan_path.endswith('"')):
+                scan_path = f'"{scan_path}"'
+            
+            scan_cmd = f"clamscan --infected --recursive --remove --verbose {scan_path}"
+            
+            chan = ssh.get_transport().open_session()
+            chan.exec_command(scan_cmd)
+            return "Linux", chan.makefile('r'), chan.makefile_stderr('r')
+
+        # Windows detection
+        win_detection_cmds = [
+            'ver',
+            'systeminfo | findstr /B /C:"OS Name"',
+            'powershell -Command "(Get-CimInstance Win32_OperatingSystem).Caption"'
+        ]
+        
+        is_windows = False
+        for cmd in win_detection_cmds:
+            stdin, stdout, stderr = ssh.exec_command(cmd)
+            output = stdout.read().decode().strip().lower()
+            if "windows" in output or "microsoft" in output:
+                is_windows = True
+                break
+
+        if not is_windows:
+            raise Exception("Could not confirm Windows OS on remote host")
+
+        # Windows scan
+        clamav_paths = [
+            r'C:\Program Files\ClamAV\clamscan.exe',
+            r'C:\Program Files (x86)\ClamAV\clamscan.exe'
+        ]
+        
+        found_path = None
+        for path_option in clamav_paths:
+            test_cmd = f'powershell -Command "Test-Path \'{path_option}\'"'
+            stdin, stdout, stderr = ssh.exec_command(test_cmd)
+            if "True" in stdout.read().decode():
+                found_path = path_option
+                break
+
+        if not found_path:
+            raise Exception("ClamAV not found in standard locations")
+
+        # Format scan path
+        scan_path = path.replace('/', '\\')
+        if ' ' in scan_path and not (scan_path.startswith('"') and scan_path.endswith('"')):
+            scan_path = f'"{scan_path}"'
+
+        scan_cmd = f'"{found_path}" --infected --recursive --remove --verbose {scan_path}'
+        
+        # For Windows, we need to run via cmd.exe to handle paths properly
+        full_cmd = f'cmd /c "{scan_cmd}"'
+        
+        chan = ssh.get_transport().open_session()
+        chan.exec_command(full_cmd)
+        return "Windows", chan.makefile('r'), chan.makefile_stderr('r')
+
+    except Exception as e:
+        if ssh:
+            ssh.close()
+        raise Exception(f"Scan failed: {str(e)}")
+
+
+
+
+def install_on_single_host(host, username, password, port):
+    """Helper function to install on a single host with proper error handling"""
+    # Initialize variables
+    installer = None
+    error_msg = ""
+    success = False
+    
+    try:
+        # Create installer instance
+        installer = ClamAVInstaller(host, username, password, port=port)
+        
+        # Attempt installation
+        success, message = installer.install()
+        if not success:
+            error_msg = f"Installation failed: {message}"
+        
+    except paramiko.AuthenticationException:
+        error_msg = "Authentication failed - check username/password"
+    except paramiko.SSHException as e:
+        error_msg = f"SSH connection error: {str(e)}"
+    except socket.timeout:
+        error_msg = "Connection timed out - check network/firewall"
+    except Exception as e:
+        error_msg = f"Unexpected error: {str(e)}"
+    finally:
+        # Clean up SSH connection if it exists
+        if installer and hasattr(installer, 'ssh') and installer.ssh:
+            try:
+                installer.ssh.close()
+            except:
+                pass
+    
+    if error_msg:
+        return False, error_msg
+    return success, message if success else "Installation completed with warnings"
+
 
 
 def humanize_bytes(num, suffix="B"):
@@ -836,46 +947,105 @@ def network_scan_page():
         ip=get_lan_ip(),
         time=datetime.now().strftime("%H:%M:%S")
     )
-
 # Add the scan endpoint with login protection
 @app.route('/perform-scan')
 @login_required
 def scan():
     path = request.args.get("scan_path")
+    path = unquote(path) if path else None  # Decode URL-encoded path here
+    print(f"Decoded scan path: {path}")
     remote_host = request.args.get("remote_host")
     username = request.args.get("remote_user")
     password = request.args.get("remote_pass")
+    port = request.args.get("remote_port", "22")  # Default to 22 if not specified
 
     def generate():
         yield "data: 🔄 Starting scan...\n\n"
         try:
             if remote_host:
+                # Validate port
+                try:
+                    port_num = int(port)
+                    if not 1 <= port_num <= 65535:
+                        raise ValueError("Port out of range")
+                except ValueError as e:
+                    yield f"data: ❌ Invalid port number: {str(e)}\n\n"
+                    return
+                
                 # SSH mode
-                yield f"data: 🔗 Connecting to remote host {remote_host}...\n\n"
-                remote_os, stdout, stderr = ssh_scan(remote_host, username, password, path)
-                yield f"data: 💻 Remote OS: {remote_os}\n\n"
-                for line in iter(stdout.readline, ""):
-                    yield f"data: {line.strip()}\n\n"
-                yield "data: ✅ Remote scan finished.\n\n"
+                yield f"data: 🔗 Connecting to remote host {remote_host}:{port}...\n\n"
+                try:
+                    remote_os, stdout, stderr = ssh_scan(remote_host, username, password, path, port=port_num)
+                    yield f"data: 💻 Remote OS: {remote_os}\n\n"
+                    
+                    # Read output line by line with timeout
+                    start_time = time.time()
+                    timeout = 300  # 5 minutes timeout
+                    
+                    while True:
+                        line = stdout.readline()
+                        if line:
+                            yield f"data: {line.strip()}\n\n"
+                            start_time = time.time()  # Reset timeout on activity
+                        elif time.time() - start_time > timeout:
+                            yield "data: ⏰ Timeout waiting for scan output\n\n"
+                            break
+                        elif stdout.channel.exit_status_ready():
+                            break
+                        else:
+                            time.sleep(0.1)  # Small delay to prevent busy waiting
+                            
+                    yield "data: ✅ Remote scan finished.\n\n"
+                except paramiko.AuthenticationException:
+                    yield "data: ❌ Authentication failed\n\n"
+                except paramiko.SSHException as e:
+                    yield f"data: ❌ SSH error: {str(e)}\n\n"
+                except socket.timeout:
+                    yield "data: ❌ Connection timed out\n\n"
+                except Exception as e:
+                    yield f"data: ❌ Error: {str(e)}\n\n"
             else:
                 # Local scan
-                process = subprocess.Popen(build_command(path), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-                for line in iter(process.stdout.readline, ''):
-                    yield f"data: {line.strip()}\n\n"
-                process.stdout.close()
-                process.wait()
-                yield "data: ✅ Local scan finished.\n\n"
+                yield "data: 🔍 Starting local scan...\n\n"
+                try:
+                    process = subprocess.Popen(
+                        build_command(path), 
+                        stdout=subprocess.PIPE, 
+                        stderr=subprocess.STDOUT, 
+                        text=True,
+                        bufsize=1,  # Line buffered
+                        universal_newlines=True
+                    )
+                    
+                    for line in iter(process.stdout.readline, ''):
+                        yield f"data: {line.strip()}\n\n"
+                        
+                    process.stdout.close()
+                    return_code = process.wait()
+                    
+                    if return_code == 0:
+                        yield "data: ✅ Local scan finished successfully.\n\n"
+                    elif return_code == 1:
+                        yield "data: ⚠️ Local scan found infected files!\n\n"
+                    else:
+                        yield f"data: ⚠️ Local scan finished with return code {return_code}\n\n"
+                except FileNotFoundError:
+                    yield "data: ❌ ClamAV not found. Please install ClamAV first.\n\n"
+                except Exception as e:
+                    yield f"data: ❌ Error during local scan: {str(e)}\n\n"
         except Exception as e:
-            yield f"data: ❌ Error: {str(e)}\n\n"
+            yield f"data: ❌ Unexpected error: {str(e)}\n\n"
 
     return Response(generate(), mimetype='text/event-stream')
 
+# Enhanced install endpoint with better error handling
 @app.route('/perform-install', methods=['POST'])
 @login_required
 def install():
     hosts = [h.strip() for h in request.form.get("install_hosts", "").split(',') if h.strip()]
     username = request.form.get("install_user", "")
     password = request.form.get("install_pass", "")
+    port = request.form.get("install_port", "22")  # Default to 22 if not specified
     
     def generate():
         yield "data: 🔧 Starting ClamAV installation on remote hosts...\n\n"
@@ -884,19 +1054,40 @@ def install():
             return
             
         try:
-            # Add debug output
-            yield f"data: ⚙️ Attempting to install on {len(hosts)} hosts...\n\n"
+            # Validate port
+            try:
+                port_num = int(port)
+                if not 1 <= port_num <= 65535:
+                    raise ValueError("Port out of range")
+            except ValueError as e:
+                yield f"data: ❌ Invalid port number: {str(e)}\n\n"
+                return
+                
+            yield f"data: ⚙️ Attempting to install on {len(hosts)} hosts using port {port}...\n\n"
             
-            for host in hosts:
-                yield f"data: 🔌 Connecting to {host}...\n\n"
-                try:
-                    installer = ClamAVInstaller(host, username, password)
-                    success, message = installer.install()
-                    status = "✅" if success else "❌"
-                    yield f"data: {status} {host}: {message}\n\n"
-                except Exception as e:
-                    yield f"data: ❌ {host} failed: {str(e)}\n\n"
-                    continue
+            # Process hosts in parallel with ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                future_to_host = {
+                    executor.submit(
+                        install_on_single_host,
+                        host,
+                        username,
+                        password,
+                        port_num
+                    ): host for host in hosts
+                }
+                
+                for future in as_completed(future_to_host):
+                    host = future_to_host[future]
+                    try:
+                        success, message = future.result()
+                        status = "✅" if success else "❌"
+                        for line in message.split('\n'):
+                            if line.strip():
+                                yield f"data: {status} {host}: {line.strip()}\n\n"
+                    except Exception as e:
+                        yield f"data: ❌ {host} failed: {str(e)}\n\n"
+                        continue
                     
             yield "data: 🏁 Installation process completed\n\n"
         except Exception as e:
@@ -904,53 +1095,22 @@ def install():
 
     return Response(generate(), mimetype='text/event-stream')
 
-def get_os_from_ttl(ttl):
+def install_on_single_host(host, username, password, port):
+    """Helper function to install on a single host with proper error handling"""
     try:
-        ttl = int(ttl)
-        if ttl <= 64:
-            return "Linux"
-        elif ttl <= 128:
-            return "Windows"
-        elif ttl <= 255:
-            return "Router"
-    except:
-        return "Unknown"
-    return "Unknown"
-
-def ping_host(ip):
-    param = '-n' if platform.system().lower() == 'windows' else '-c'
-    try:
-        output = subprocess.check_output(['ping', param, '1', '-W', '1', ip], stderr=subprocess.DEVNULL, universal_newlines=True)
-        ttl_match = re.search(r'ttl[=|:](\d+)', output.lower())
-        ttl = ttl_match.group(1) if ttl_match else "Unknown"
-        os = get_os_from_ttl(ttl)
-
-        try:
-            hostname = socket.gethostbyaddr(ip)[0]
-        except:
-            hostname = "Unknown"
-
-        return {'ip': ip, 'hostname': hostname, 'ttl': ttl, 'os': os}
-    except:
-        return None
-
-def scan_network_topology(network_cidr):
-    network = ipaddress.ip_network(network_cidr, strict=False)
-    hosts_info = []
-
-    for ip in network.hosts():
-        ip_str = str(ip)
-        info = ping_host(ip_str)
-        if info:
-            hosts_info.append(info)
-
-    return hosts_info
-
-# @app.route('/scan_map')
-# def scan_map():
-#     network = request.args.get('network', '192.168.1.0/24')
-#     hosts = scan_network_topology(network)
-#     return render_template('network_map.html', hosts=hosts, network=network)
+        installer = ClamAVInstaller(host, username, password, port=port)
+        return installer.install()
+    except paramiko.AuthenticationException:
+        return False, "Authentication failed"
+    except paramiko.SSHException as e:
+        return False, f"SSH error: {str(e)}"
+    except socket.timeout:
+        return False, "Connection timed out"
+    except Exception as e:
+        return False, f"Error: {str(e)}"
+    finally:
+        if hasattr(installer, 'ssh') and installer.ssh:
+            installer.ssh.close()
 
 
 @app.route('/ioc-scan')
