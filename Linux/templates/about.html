@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About ClamNET - Enterprise Security Platform</title>
+
+  <!-- Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="../static/css/styles.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+  <!-- Red and Black Aesthetic -->
+  <style>
+    body {
+    background-image: url(../static/GIF-Cybersecurity-Lockv2.gif);
+    background-size: cover;
+    font-family: "Red Hat Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #000000;
+    padding: 40px 0;
+    min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-weight: 700;
+      color: #000;
+    }
+
+    h1 {
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Navbar */
+    .navbar, .sb-sidenav {
+      background-color: #121212 !important;
+      border-bottom: 2px solid #cc0000;
+    }
+
+    .navbar-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff !important;
+    }
+
+    .navbar-brand:hover {
+      color: #ff4d4d !important;
+    }
+
+    /* Sidebar Links */
+    .nav-link {
+      color: #bbb;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(204, 0, 0, 0.2);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background-color: #cc0000;
+      color: #fff;
+    }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      color: #cc0000;
+    }
+
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 6px;
+      background-color: #2a2a2a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    .card-header {
+      background-color: #cc0000;
+      color: #fff;
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      background-color: #1c1c1c;
+      color: #ddd;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+      background: rgba(204, 0, 0, 0.1);
+      border-left: 3px solid #cc0000;
+      border-radius: 0 6px 6px 0;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(204, 0, 0, 0.2);
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 50px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #cc0000;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -38px;
+      top: 5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #cc0000;
+      border: 3px solid #1c1c1c;
+    }
+
+    /* Tech Badges */
+    .tech-badge {
+      background: rgba(204, 0, 0, 0.2);
+      border: 1px solid #cc0000;
+      color: #ddd;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      background: transparent;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-item.active {
+      color: #ff4d4d;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background-color: #121212;
+      color: #aaa;
+      padding: 1rem 0;
+    }
+
+    /* KYGnus Card */
+    .kygnus-card {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border-radius: 6px;
+    }
+
+    .kygnus-card-header {
+      background: linear-gradient(90deg, #d63333 0%, #b02a2a 100%);
+      border-radius: 6px 6px 0 0;
+      padding: 0.7rem 1rem;
+    }
+
+    .text-gradient {
+      background: linear-gradient(90deg, #ffffff 0%, #d63333 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+    }
+
+    .link-card {
+      background: rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .link-card:hover {
+      background: rgba(204, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+  <!-- Top Nav -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark px-4">
+    <a class="navbar-brand text-glow" href="https://kygnus.github.io/">KYGnus</a>
+    <button class="btn btn-link btn-sm" id="sidebarToggle"><i class="fas fa-bars icon-glow"></i></button>
+  </nav>
+
+  <!-- Layout -->
+  <div id="layoutSidenav">
+    <!-- Sidebar -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu px-2">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="/">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+              Dashboard
+            </a>
+            <div class="sb-sidenav-menu-heading">Tools</div>
+            <a class="nav-link" href="/scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-search" style="color:#d63333;"></i></div>
+              File Scanner
+            </a>
+            <a class="nav-link" href="/ioc-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-bug" style="color:#d63333;"></i></div>
+              IOC Scan
+            </a>
+            <a class="nav-link" href="/cfg-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-project-diagram" style="color:#d63333;"></i></div>
+              CFG Analysis
+            </a>
+            <a class="nav-link" href="/pcap-scan">
+              <div class="sb-nav-link-icon"><i class="fas fa-network-wired" style="color:#d63333;"></i></div>
+              PCAP Scan
+            </a>
+            <a class="nav-link" href="/pepper-analysis">
+              <div class="sb-nav-link-icon"><i class="fas fa-file-code" style="color:#d63333;"></i></div>
+              Pepper
+            </a>
+            <a class="nav-link active" href="/about">
+              <div class="sb-nav-link-icon"><i class="fas fa-info-circle" style="color:#d63333;"></i></div>
+              About
+            </a>
+          </div>
+        </div>
+        <div class="sb-sidenav-footer text-light">
+          <a class="nav-link" href="/logout">
+            <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+            Logout
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div id="layoutSidenav_content">
+      <main class="p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="mb-3 text-glow" style="color: #000000;">About <span style="color: #cc0000;">ClamNET</span></h1>
+          <img src="../static/ClamAV.svg" alt="ClamAV Logo" height="60" />
+        </div>
+
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+          <li class="breadcrumb-item active">About</li>
+        </ol>
+
+        <!-- Overview Section -->
+        <div class="card mb-4 text-white">
+          <div class="card-header">
+            <i class="fas fa-shield-alt me-2"></i> Platform Overview
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h3 style="color: white;">Enterprise-Grade Threat Protection</h3>
+                <p>
+                  ClamNET is an advanced security platform integrating ClamAV with cutting-edge 
+                  malware analysis capabilities. Designed for security teams, it provides:
+                </p>
+                <ul>
+                  <li>Multi-layered file scanning</li>
+                  <li>Network-wide threat detection</li>
+                  <li>Control flow deobfuscation</li>
+                  <li>Centralized management</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <div class="alert alert-dark">
+                  <h5><i class="fas fa-bolt me-2"></i>Current Version</h5>
+                  <p class="mb-1"><strong>v2.1.0</strong> "Quantum" Release</p>
+                  <p class="small text-muted">Last Updated: {{ time }}</p>
+                  
+                  <h5 class="mt-3"><i class="fas fa-server me-2"></i>System Info</h5>
+                  <p class="mb-1"><strong>OS:</strong> {{ os }}</p>
+                  <p class="mb-1"><strong>IP:</strong> {{ ip }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mb-4">
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 feature-card">
+              <div class="card-body">
+                <h4 class="card-title">
+                  <i class="fas fa-search me-2"></i> Deep Analysis
+                </h4>
+                <p class="card-text">
+                  Combines signature-based detection with heuristic analysis and 
+                  behavioral monitoring for comprehensive threat identification.
+                </p>
+                <div class="mt-3">
+                  <span class="badge tech-badge">YARA</span>
+                  <span class="badge tech-badge">LIEF</span>
+                  <span class="badge tech-badge">Unicorn</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 feature-card">
+              <div class="card-body">
+                <h4 class="card-title">
+                  <i class="fas fa-network-wired me-2"></i> Network Integration
+                </h4>
+                <p class="card-text">
+                  Scan entire network segments remotely with parallel processing 
+                  and centralized reporting.
+                </p>
+                <div class="mt-3">
+                  <span class="badge tech-badge">Paramiko</span>
+                  <span class="badge tech-badge">Concurrent</span>
+                  <span class="badge tech-badge">IP Analysis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 feature-card">
+              <div class="card-body">
+                <h4 class="card-title">
+                  <i class="fas fa-project-diagram me-2"></i> CFG Deobfuscation
+                </h4>
+                <p class="card-text">
+                  Advanced control flow graph analysis to detect and reverse 
+                  obfuscated malware execution patterns.
+                </p>
+                <div class="mt-3">
+                  <span class="badge tech-badge">Capstone</span>
+                  <span class="badge tech-badge">Keystone</span>
+                  <span class="badge tech-badge">CFG</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="card mb-4 text-white">
+          <div class="card-header">
+            <i class="fas fa-layer-group me-2"></i> Technology Stack
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h4 style="color: white;">Core Components</h4>
+                <ul class="list-unstyled">
+                  <li class="mb-2">
+                    <strong>Flask</strong> - Python web framework handling all HTTP requests and UI rendering
+                  </li>
+                  <li class="mb-2">
+                    <strong>ClamAV</strong> - Open-source antivirus engine providing signature-based detection
+                  </li>
+                  <li class="mb-2">
+                    <strong>Paramiko</strong> - SSH library for remote command execution and file transfers
+                  </li>
+                  <li class="mb-2">
+                    <strong>LIEF</strong> - Library for parsing and analyzing executable formats
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h4 style="color: white;">Analysis Engines</h4>
+                <ul class="list-unstyled">
+                  <li class="mb-2">
+                    <strong>YARA</strong> - Pattern matching for malware identification
+                  </li>
+                  <li class="mb-2">
+                    <strong>Unicorn Engine</strong> - CPU emulation for dynamic analysis
+                  </li>
+                  <li class="mb-2">
+                    <strong>Capstone/Keystone</strong> - Disassembly and assembly frameworks
+                  </li>
+                  <li class="mb-2">
+                    <strong>NetworkX</strong> - Network topology visualization
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Development Timeline -->
+        <div class="card mb-4 text-white">
+          <div class="card-header">
+            <i class="fas fa-history me-2"></i> Development Timeline
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <h5 style="color: white;">v1.0.0 - Foundation</h5>
+                <p class="text-muted">Initial release with basic ClamAV integration and file scanning</p>
+              </div>
+              <div class="timeline-item">
+                <h5 style="color: white;">v1.5.0 - Network Expansion</h5>
+                <p class="text-muted">Added remote scanning capabilities and network topology mapping</p>
+              </div>
+              <div class="timeline-item">
+                <h5 style="color: white;">v2.0.0 - Advanced Analysis</h5>
+                <p class="text-muted">Integrated IOC scanning and YARA rule matching</p>
+              </div>
+              <div class="timeline-item">
+                <h5 style="color: white;">v2.1.0 - Quantum</h5>
+                <p class="text-muted">Added CFG analysis and deobfuscation capabilities</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- License Information -->
+        <div class="card text-white">
+          <div class="card-header">
+            <i class="fas fa-balance-scale me-2"></i> License & Legal
+          </div>
+          <div class="card-body">
+            <h4 style="color: white;">GNU General Public License v3.0</h4>
+            <p>
+              ClamNET is open-source software released under the GPL-3.0 license. 
+              This means you are free to use, modify, and distribute the software, 
+              provided you:
+            </p>
+            <ul>
+              <li>Disclose source code of any modified versions</li>
+              <li>License derivative works under GPL-3.0</li>
+              <li>Preserve copyright notices and license files</li>
+            </ul>
+            <div class="alert alert-dark mt-3">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <strong>Disclaimer:</strong> This software is provided "as-is" without 
+              warranties. The developers are not liable for any damages resulting 
+              from its use.
+            </div>
+          </div>
+        </div>
+
+        <!-- KYGnus Information -->
+        <div class="card mt-4 kygnus-card">
+          <div class="kygnus-card-header">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-balance-scale me-2"></i>
+              <h4 class="mb-0">About KYGnus</h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <h5 class="text-gradient">Security Research & Development</h5>
+              <p class="text-muted">Advanced threat analysis and cybersecurity solutions</p>
+            </div>
+            
+            <div class="link-card mb-3">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-globe me-3" style="color: #d63333; font-size: 1.5rem;"></i>
+                <div>
+                  <h6 class="mb-1">Website</h6>
+                  <a href="http://kygnus.de" class="stretched-link" style="color: white;">
+                    <span style="border-bottom: 1px dashed rgba(255,255,255,0.3);">kygnus.de</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="link-card">
+              <div class="d-flex align-items-center">
+                <i class="fab fa-github me-3" style="color: #d63333; font-size: 1.5rem;"></i>
+                <div>
+                  <h6 class="mb-1">GitHub</h6>
+                  <a href="https://github.com/KYGnus" class="stretched-link" style="color: white;">
+                    <span style="border-bottom: 1px dashed rgba(255,255,255,0.3);">github.com/KYGnus</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 pt-3 border-top border-secondary">
+              <small class="text-muted">© 2025 KYGnus | All Rights Reserved</small>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="py-4 mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex justify-content-between align-items-center small">
+            <div class="text-muted">© 2025 KYGnus Security</div>
+            <div>
+              <a href="/privacy">Privacy</a>
+              &middot;
+              <a href="/terms">Terms</a>
+              &middot;
+              <a href="https://github.com/KYGnus/ClamNET" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../static/js/scripts.js"></script>
+</body>
+</html>

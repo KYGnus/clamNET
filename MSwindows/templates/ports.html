@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Open Ports</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Open Ports</h1>
+    <button onclick="refreshPorts()">Refresh</button>
+    <div id="ports-info"></div>
+    
+    <script>
+        function refreshPorts() {
+            fetch('/ports')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('ports-info').innerHTML = 
+                            `<p style="color: red;">Error: ${data.error}</p>`;
+                        return;
+                    }
+                    
+                    let html = '<table><tr><th>Port</th><th>Protocol</th><th>State</th><th>PID (Windows)</th></tr>';
+                    
+                    for (const [port, info] of Object.entries(data)) {
+                        info.forEach(item => {
+                            html += `<tr>
+                                <td>${port}</td>
+                                <td>${item.protocol || ''}</td>
+                                <td>${item.state || ''}</td>
+                                <td>${item.pid || ''}</td>
+                            </tr>`;
+                        });
+                    }
+                    
+                    html += '</table>';
+                    document.getElementById('ports-info').innerHTML = html;
+                });
+        }
+        
+        // Load ports on page load
+        window.onload = refreshPorts;
+    </script>
+    
+    <p><a href="/">Back to Scanner</a></p>
+</body>
+</html>
