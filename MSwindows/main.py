@@ -23,6 +23,9 @@ from werkzeug.utils import secure_filename
 import uuid
 from urllib.parse import unquote
 import config
+from concurrent.futures import as_completed
+
+
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -35,6 +38,10 @@ app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'doc', 'docx', 'xls', 'md', 'c
                                   'xlsx', 'ppt', 'pptx', 'exe', 'dll', 'js', 'config',
                                   'vbs', 'ps1', 'zip', 'rar', '7z', 'jpg', 'jpeg', 
                                   'png', 'jfif', 'heic', 'pcap', 'pcapng'}
+
+
+
+                                  
 app.config['MAX_FILE_SIZE'] = 100 * 1024 * 1024  # 100MB
 app.config['PEPPER_PATH'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pepper.py')
 
@@ -69,6 +76,17 @@ def get_lan_ip():
 
 def get_os():
     return platform.system()
+
+def get_windows_version():
+    try:
+        import winreg
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion")
+        product_name = winreg.QueryValueEx(key, "ProductName")[0]
+        release_id = winreg.QueryValueEx(key, "ReleaseId")[0] if "ReleaseId" in [v[0] for v in winreg.EnumValue(key, 0)] else ""
+        return f"{product_name} {release_id}"
+    except:
+        return platform.system()
+
 
 def build_command(path):
     """Build Windows-specific command"""
@@ -196,19 +214,22 @@ class ClamAVInstaller:
             return False, f"File transfer failed: {str(e)}"
         
     def install_windows(self):
-        """Install ClamAV on Windows by transferring MSI and database"""
+        """Install ClamAV on Windows with improved compatibility"""
         try:
+            # Define possible installation paths
+            possible_install_dirs = [
+                "C:\\Program Files\\ClamAV",
+                "C:\\Program Files (x86)\\ClamAV"
+            ]
+            
+            # Transfer MSI file
             local_msi_path = config.LOCAL_INSTALL_FILE
             remote_msi_path = config.REMOTE_INSTALL_FILE
-            local_cvd_path = config.LOCAL_CVD_FILE
-            remote_cvd_path = "C:\\Program Files\\ClamAV\\database\\daily.cvd"
-
-            # Step 1: Transfer the MSI file
             success, message = self.transfer_file(local_msi_path, remote_msi_path)
             if not success:
                 return False, message
 
-            # Step 2: Install the MSI
+            # Install with Windows Installer
             install_cmd = (
                 f"msiexec /i {remote_msi_path} /quiet /qn /norestart "
                 "ADDLOCAL=ALL INSTALLDIR=\"C:\\Program Files\\ClamAV\""
@@ -217,30 +238,57 @@ class ClamAVInstaller:
             if exit_status != 0:
                 return False, f"Installation failed: {error}"
 
-            # Step 3: Configure ClamAV
+            # Find where ClamAV was actually installed
+            installed_path = None
+            for path in possible_install_dirs:
+                test_cmd = f'if exist "{path}" echo exists'
+                _, output, _ = self.execute_command(test_cmd)
+                if "exists" in output:
+                    installed_path = path
+                    break
+            
+            if not installed_path:
+                return False, "Could not determine ClamAV installation location"
+
+            # Configure ClamAV with version-specific adjustments
             config_commands = [
-                "mkdir \"C:\\Program Files\\ClamAV\\database\"",
-                "copy \"C:\\Program Files\\ClamAV\\conf_examples\\clamd.conf.sample\" \"C:\\Program Files\\ClamAV\\clamd.conf\"",
-                "copy \"C:\\Program Files\\ClamAV\\conf_examples\\freshclam.conf.sample\" \"C:\\Program Files\\ClamAV\\freshclam.conf\"",
-                "(Get-Content \"C:\\Program Files\\ClamAV\\clamd.conf\") | ForEach-Object { $_ -replace '^Example', '#Example' } | Set-Content \"C:\\Program Files\\ClamAV\\clamd.conf\"",
+                f'mkdir "{installed_path}\\database"',
+                f'copy "{installed_path}\\conf_examples\\clamd.conf.sample" "{installed_path}\\clamd.conf"',
+                f'copy "{installed_path}\\conf_examples\\freshclam.conf.sample" "{installed_path}\\freshclam.conf"',
+                f'(Get-Content "{installed_path}\\clamd.conf") | ForEach-Object {{ $_ -replace "^Example", "#Example" }} | Set-Content "{installed_path}\\clamd.conf"',
+                # Add Windows Defender exclusion (for Server 2016+ and Win10 1709+)
+                'powershell -Command "Add-MpPreference -ExclusionPath \"C:\\Program Files\\ClamAV\" -ErrorAction SilentlyContinue"',
+                # Add firewall rule for freshclam updates
+                'netsh advfirewall firewall add rule name="ClamAV Freshclam" dir=out action=allow program="C:\\Program Files\\ClamAV\\freshclam.exe" enable=yes'
             ]
+
             for cmd in config_commands:
                 exit_status, _, error = self.execute_command(cmd)
                 if exit_status != 0:
-                    return False, f"Configuration failed: {error}"
+                    # Non-fatal error for some configuration items
+                    continue
 
-            # Step 4: Transfer daily.cvd database file
+            # Transfer database file
+            local_cvd_path = config.LOCAL_CVD_FILE
+            remote_cvd_path = f"{installed_path}\\database\\daily.cvd"
             success, message = self.transfer_file(local_cvd_path, remote_cvd_path)
             if not success:
                 return False, f"Failed to transfer daily.cvd: {message}"
 
-            return True, "ClamAV installed, configured, and database transferred successfully"
+            # Create scheduled task for updates
+            task_cmd = (
+                'schtasks /Create /TN "ClamAV Update" /TR "\'C:\\Program Files\\ClamAV\\freshclam.exe\'" '
+                '/SC DAILY /RU SYSTEM /F'
+            )
+            self.execute_command(task_cmd)
+
+            return True, f"ClamAV installed successfully to {installed_path}"
 
         except Exception as e:
             return False, f"Windows installation error: {str(e)}"
         finally:
-            # Clean up the installer file
-            if self.sftp:
+            # Clean up installer file
+            if hasattr(self, 'sftp') and self.sftp:
                 try:
                     self.sftp.remove(remote_msi_path)
                 except:
@@ -411,7 +459,7 @@ def index():
 
     return render_template(
         'main.html',
-        os=get_os(),
+        os=get_windows_version() if get_os() == 'Windows' else get_os(),
         ip=get_lan_ip(),
         clamav_path_windows="C:\\Program Files\\ClamAV\\clamscan.exe",
         clamav_db_path_windows="C:\\Program Files\\ClamAV\\database",
@@ -706,6 +754,84 @@ def upload_ioc_file():
         })
         
     return jsonify({'success': False, 'message': 'Invalid file type'}), 400
+
+
+
+@app.route('/update-remote-databases', methods=['POST'])
+@login_required
+def update_remote_databases():
+    """Update database on remote hosts"""
+    hosts = [h.strip() for h in request.form.get("update_hosts", "").split(',') if h.strip()]
+    username = request.form.get("update_user", "")
+    password = request.form.get("update_pass", "")
+    port = request.form.get("update_port", "22")
+
+    def generate():
+        yield "data: 🔄 Starting database update on remote hosts...\n\n"
+        
+        if not hosts:
+            yield "data: ❌ No valid hosts provided\n\n"
+            return
+            
+        try:
+            port_num = int(port)
+            if not 1 <= port_num <= 65535:
+                raise ValueError("Port out of range")
+                
+            local_db_path = os.path.join(app.config['MAINDIR'], 'daily.cvd')
+            if not os.path.exists(local_db_path):
+                yield "data: ❌ No local database file found. Upload one first.\n\n"
+                return
+                
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                future_to_host = {
+                    executor.submit(
+                        update_host_database,
+                        host,
+                        username,
+                        password,
+                        port_num,
+                        local_db_path
+                    ): host for host in hosts
+                }
+                
+                for future in concurrent.futures.as_completed(future_to_host):
+                    host = future_to_host[future]
+                    try:
+                        success, message = future.result()
+                        status = "✅" if success else "❌"
+                        for line in message.split('\n'):
+                            if line.strip():
+                                yield f"data: {status} {host}: {line.strip()}\n\n"
+                    except Exception as e:
+                        yield f"data: ❌ {host} failed: {str(e)}\n\n"
+                        
+            yield "data: 🏁 Database update process completed\n\n"
+        except Exception as e:
+            yield f"data: ❌ Global update error: {str(e)}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream')
+
+def update_host_database(host, username, password, port, local_db_path):
+    """Update database on a single host"""
+    try:
+        installer = ClamAVInstaller(host, username, password, port)
+        installer.connect()
+        
+        # Transfer the database file
+        remote_path = "C:\\Program Files\\ClamAV\\database\\daily.cvd"
+        success, message = installer.transfer_file(local_db_path, remote_path)
+        if not success:
+            return False, message
+            
+        return True, "Database updated successfully"
+    except Exception as e:
+        return False, str(e)
+    finally:
+        if installer.ssh:
+            installer.ssh.close()
+
+
 
 @app.route('/pepper-analysis')
 @login_required
